@@ -10,7 +10,6 @@
     <div th:insert="header :: header"></div>
     <div th:insert="header :: modifyBankAccountBreadcrumb"></div>
     <h2 class="h2">Modifier mon compte bancaire</h2>
-
     <div>
         <form method="post"
               th:action="@{/updateBankAccount}" th:object="${bankAccount}">

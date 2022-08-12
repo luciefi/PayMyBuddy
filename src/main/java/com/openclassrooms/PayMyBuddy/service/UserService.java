@@ -1,6 +1,7 @@
 package com.openclassrooms.PayMyBuddy.service;
 
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
+import com.openclassrooms.PayMyBuddy.model.ContactDto;
 import com.openclassrooms.PayMyBuddy.model.PayerRecipient;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.PayerRecipientRepository;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,12 +42,13 @@ public class UserService implements IUserService {
     public boolean saveContact(String email) {
         return false;
     }
-/*
+
     public Iterable<ContactDto> getContacts() {
         Long currentUserId = CurrentUserUtils.getCurrentUserId();
         List<PayerRecipient> contacts = payerRecipientRepository.findByPayerId(currentUserId);
         // TODO id des contacts to DTO pour afficher la liste
+        return new ArrayList<ContactDto>();
     }
-*/
+
 
 }

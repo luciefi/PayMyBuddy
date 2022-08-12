@@ -2,20 +2,26 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ajout nouveau contact</title>
+    <title>Ajouter un nouveau contact</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 <div class="container">
+    <div th:insert="header :: header"></div>
+    <div th:insert="header :: addContactBreadcrumb"></div>
     <h2 class="h2">Ajout d'un nouveau contact</h2>
     <div>
         <form method="post"
-              th:action="@{/saveContact}" th:object="${user}">
+              th:action="@{/createContact}" th:object="${contactDto}">
             <div class="form-group">
-                <label for="emailInput">Email</label>
+                <ul th:if="${#fields.hasErrors('global')}">
+                    <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Ce contact existe déjà.</li>
+                </ul>
+                <label for="emailInput" class="form-label">Email</label>
                 <input
                         type="text" th:field="*{email}" class="form-control" id="emailInput"
-                        aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact'">
+                        aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact">
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>
         </form>
