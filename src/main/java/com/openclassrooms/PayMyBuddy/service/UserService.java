@@ -51,4 +51,8 @@ public class UserService implements IUserService {
     }
 
 
+    @Override
+    public void deleteContact(Long id) {
+        // TODO
+    }
 }
