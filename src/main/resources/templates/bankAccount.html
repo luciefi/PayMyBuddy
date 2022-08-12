@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes comptes bancaires</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="container-fluid">
+    <div th:insert="header :: header"></div>
+    <div th:insert="header :: profileBreadcrumb"></div>
+    <div class="container special">
+        <h2 class="h2">Liste de mes comptes bancaires</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>IBAN</th>
+                    <th>BIC</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${bankAccounts.empty}">
+                    <td colspan="3">Aucun compte bancaire enregistré</td>
+                </tr>
+                <tr th:each="bankAccount: ${bankAccounts}">
+                    <td><span th:text="${bankAccount.name}"></span></td>
+                    <td><span th:text="${bankAccount.iban}"></span></td>
+                    <td><span th:text="${bankAccount.bic}"></span></td>
+                    <td>
+                        <a th:href="@{/updateBankAccount/{id}(id=${bankAccount.id})}">
+                            <button class="btn btn-info">Modifier</button>
+                        </a>
+                        <a th:href="@{/deleteBankAccount/{id}(id=${bankAccount.id})}">
+                            <button class="btn btn-danger">Supprimer</button>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <h4><a th:href="@{/createBankAccount}">Ajouter un compte bancaire</a></h4>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+</html>

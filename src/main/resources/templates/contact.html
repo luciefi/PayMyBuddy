@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Contacts</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="container">
+    <h2 class="h2">Mes contacts</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <tr>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${contacts.empty}">
+                <td colspan="3">Aucun contact enregistré</td>
+            </tr>
+            <tr th:each="contact: ${contacts}">
+                <td><span th:text="${contact.firstName}"> Prénom </span></td>
+                <td><span th:text="${contact.lastName}"> Nom </span></td>
+                <td><span th:text="${contact.email}"> Email </span></td>
+                <td>
+                    <a th:href="@{/deleteContact/{id}(id=${contact.id})}">
+                        <button class="btn btn-danger">Supprimer</button>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <h4><a th:href="@{/createContact}">Ajouter un nouveau contact</a></h4>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+</html>
