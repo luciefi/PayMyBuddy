@@ -1,0 +1,16 @@
+package com.openclassrooms.PayMyBuddy.utils;
+
+import com.openclassrooms.PayMyBuddy.model.ContactDto;
+import com.openclassrooms.PayMyBuddy.model.PayerRecipient;
+import com.openclassrooms.PayMyBuddy.model.User;
+
+public class ContactUtils {
+    public static ContactDto convertToContactDto(User user, PayerRecipient payerRecipient){
+        ContactDto contactDto = new ContactDto();
+        contactDto.setDateOfCreation(payerRecipient.getDateOfCreation());
+        contactDto.setEmail(user.getEmail());
+        contactDto.setFirstName(user.getFirstName());
+        contactDto.setLastName(user.getLastName());
+        return contactDto;
+    }
+}

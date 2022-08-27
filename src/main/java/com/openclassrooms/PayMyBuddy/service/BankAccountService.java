@@ -3,6 +3,7 @@ package com.openclassrooms.PayMyBuddy.service;
 import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
+import com.openclassrooms.PayMyBuddy.model.ExternalTransaction;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
@@ -39,7 +40,7 @@ public class BankAccountService implements IBankAccountService {
 
     @Override
     public BankAccount saveBankAccount(BankAccount bankAccount) {
-        if (validateBankAccount(bankAccount)) {
+        if (isBankAccountInvalid(bankAccount)) {
             throw new BankAccountAlreadyExistsException();
         }
         User user = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(RuntimeException::new);
@@ -49,7 +50,14 @@ public class BankAccountService implements IBankAccountService {
         return bankAccountRepository.save(bankAccount);
     }
 
-    private boolean validateBankAccount(BankAccount bankAccount) {
+    @Override
+    public void saveExternalTransaction(ExternalTransaction externalTransaction) {
+        // TODO créer un externalTransactionService ???
+        // TODO vérifier balance
+        // TODO avoir l'aval de la banque ?? comment ?
+    }
+
+    private boolean isBankAccountInvalid(BankAccount bankAccount) {
         List<BankAccount> accountList;
         if (bankAccount.getId() == null) {
             accountList = bankAccountRepository.findByIbanAndBicAndUserId(

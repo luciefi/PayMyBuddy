@@ -12,16 +12,16 @@
     <h2 class="h2">Ajout d'un nouveau contact</h2>
     <div>
         <form method="post"
-              th:action="@{/createContact}" th:object="${contactDto}">
+              th:action="@{/createContact}" th:object="${emailAddress}">
             <div class="form-group">
                 <ul th:if="${#fields.hasErrors('global')}">
                     <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Ce contact existe déjà.</li>
                 </ul>
                 <label for="emailInput" class="form-label">Email</label>
                 <input
-                        type="text" th:field="*{email}" class="form-control" id="emailInput"
+                        type="text"  th:field="*{address}"  class="form-control" id="emailInput"
                         aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact">
-                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>
         </form>

@@ -17,13 +17,21 @@ public class PayerRecipient {
     @Column(name = "last_transaction_date")
     private Timestamp lastTransactionDate;
 
+    private boolean deleted;
+
     @Id
-    @ManyToOne                          // ou manyToMany ?
-    @JoinColumn(name = "payer_id")
+    @Column(name = "payer_id")
+    private Long payerId;
+
+    @ManyToOne
+    @JoinColumn(name = "payer_id", insertable = false, updatable = false)
     private User payer;
 
     @Id
+    @Column(name = "recipient_id")
+    private Long recipientId;
+
     @ManyToOne
-    @JoinColumn(name = "recipient_id")
+    @JoinColumn(name = "recipient_id", insertable = false, updatable = false)
     private User recipient;
 }

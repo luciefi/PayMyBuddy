@@ -14,7 +14,7 @@ public class ContactDto {
 
 
     @NotBlank(message = "L''email ne peut pas être vide.")
-    @Pattern(regexp = "[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$", message = "L''adresse email n''est pas valide")
+    @Pattern(regexp = EmailAddress.EMAIL_ADDRESS_PATTERN, message = EmailAddress.EMAIL_INVALID_MESSAGE)
     private String email;
 
     private Timestamp dateOfCreation;

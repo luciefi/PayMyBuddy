@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes virements vers mon compte bancaire</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+<div class="container-fluid">
+
+<div th:insert="header :: header"></div>
+<div th:insert="header :: externalTransactionsBreadcrumb"></div>
+<h2 class="h2">Mes virements vers mon compte bancaire</h2>
+<h4><a th:href="@{/newExternalTransaction}">Effectuer un nouveau virement externe</a></h4>
+
+</div>
+</body>
+</html>

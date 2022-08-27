@@ -1,7 +1,9 @@
 package com.openclassrooms.PayMyBuddy.controller;
 
 import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException;
+import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
+import com.openclassrooms.PayMyBuddy.model.ExternalTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,7 +53,7 @@ public class BankAccountController {
         try {
             service.saveBankAccount(bankAccount);
             return "redirect:/bankAccount";
-        } catch (BankAccountAlreadyExistsException e) {
+        } catch (BankAccountAlreadyExistsException e ) {
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
             return "updateBankAccount";
@@ -78,4 +80,5 @@ public class BankAccountController {
         service.deleteBankAccount(id);
         return new ModelAndView("redirect:/bankAccount");
     }
+
 }
