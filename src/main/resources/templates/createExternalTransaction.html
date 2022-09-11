@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Effectuer un virement vers mon compte bancaire</title>
+    <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="container">
+
+    <div th:insert="headerProfile :: header"></div>
+    <div th:insert="headerProfile :: newExternalTransactionBreadcrumb"></div>
+    <div class="container p-5">
+        <h2 class="h2">Effectuer un virement vers mon compte bancaire</h2>
+
+        <div th:if="${bankAccounts.empty}" aria-disabled="true">
+            <p>Pour effectuer un virement externe, il faut avoir enregistré un compte bancaire.</p>
+            <a th:href="@{/createBankAccount}" class="btn btn-secondary">Ajouter un compte bancaire</a>
+        </div>
+
+        <div th:unless="${bankAccounts.empty}">
+            <form method="post"
+                  th:action="@{/newExternalTransaction}" th:object="${externalTransactionDto}">
+                <ul th:if="${#fields.hasErrors('global')}">
+                    <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Virement impossible</li>
+                </ul>
+                <select class="form-control" id="bankAccountSelect" th:field="*{bankAccountId}">
+                    <option th:value="0" disabled hidden selected>Choisir un compte</option>
+                    <option th:each="bankAccount : ${bankAccounts}" th:value="${bankAccount.id}" th:text="${bankAccount.name}">
+                        Choisir le compte bancaire
+                    </option>
+                </select>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <div class="form-check">
+                        <input type="radio" id="versCompteBancaire" name="versCompteBancaire" class="form-check-input" value="0"
+                               th:field="*{transactionType}">
+                        <label class="form-check-label" for="versCompteBancaire">Vers mon compte bancaire</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="versComptePMB" name="versComptePMB" class="form-check-input" value="1"
+                               th:field="*{transactionType}">
+                        <label class="form-check-label" for="versComptePMB">Vers mon compte PayMyBuddy</label>
+                    </div>
+                    <span th:if="${#fields.hasErrors('transactionType')}" th:errors="*{transactionType}"></span>
+                </div>
+                <div class="form-group">
+                    <label for="montantInput" class="form-label">Montant</label>
+                    <input
+                            type="number" th:field="*{amount}" class="form-control" id="montantInput"
+                            placeholder="Saisir le montant">
+                    <p th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></p>
+
+                    <p>Solde actuel : <span th:text="${balance}"></span>€</p>
+                </div>
+                <div class="form-group">
+                    <label for="descriptionInput" class="form-label">Description</label>
+                    <input
+                            type="text" th:field="*{description}" class="form-control" id="descriptionInput"
+                            placeholder="Saisir la description" maxlength="64">
+                    <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,7 +1,10 @@
 package com.openclassrooms.PayMyBuddy.controller;
 
-import com.openclassrooms.PayMyBuddy.model.ExternalTransaction;
+import com.openclassrooms.PayMyBuddy.model.BankAccount;
+import com.openclassrooms.PayMyBuddy.model.ExternalTransactionDto;
 import com.openclassrooms.PayMyBuddy.service.BankAccountService;
+import com.openclassrooms.PayMyBuddy.service.ExternalTransactionService;
+import com.openclassrooms.PayMyBuddy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,35 +19,48 @@ import javax.validation.Valid;
 public class ExternalTransactionController {
 
     @Autowired
-    private BankAccountService service;
+    private ExternalTransactionService service;
 
+    @Autowired
+    private BankAccountService bankAccountService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/externalTransaction")
     public String externalTransactions(Model model) {
-        Iterable<ExternalTransaction> externalTransactions = null;
+        Iterable<ExternalTransactionDto> externalTransactions = service.getAllDto();
         model.addAttribute("externalTransactions", externalTransactions);
         return "externalTransactions";
     }
 
     @GetMapping("/newExternalTransaction")
     public String createExternalTransaction(Model model) {
-        ExternalTransaction externalTransaction = new ExternalTransaction();
-        model.addAttribute("externalTransaction", externalTransaction);
-        return "newExternalTransaction";
+        ExternalTransactionDto externalTransactionDto = new ExternalTransactionDto();
+        model.addAttribute("externalTransactionDto", externalTransactionDto);
+        Iterable<BankAccount> bankAccounts = bankAccountService.getAllForCurrentUser();
+        model.addAttribute("bankAccounts", bankAccounts);
+        float balance = userService.getBalance();
+        model.addAttribute("balance", balance);
+        return "createExternalTransaction";
     }
 
     @PostMapping("/newExternalTransaction")
-    public String saveNewExternalTransaction(@Valid ExternalTransaction externalTransaction, BindingResult result) {
+    public String saveNewExternalTransaction(@Valid ExternalTransactionDto externalTransactionDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return "newExternalTransaction";
+            Iterable<BankAccount> bankAccounts = bankAccountService.getAllForCurrentUser();
+            model.addAttribute("bankAccounts", bankAccounts);
+            float balance = userService.getBalance();
+            model.addAttribute("balance", balance);
+            return "createExternalTransaction";
         }
         try {
-            service.saveExternalTransaction(externalTransaction);
+            service.saveExternalTransaction(externalTransactionDto);
             return "redirect:/externalTransaction";
         } catch (Exception e) {  // TODO préciser type
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
-            return "newExternalTransaction";
+            return "createExternalTransaction";
         }
     }
 }

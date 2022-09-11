@@ -3,16 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Mes virements vers mon compte bancaire</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
-<div class="container-fluid">
+<div class="container">
 
-<div th:insert="header :: header"></div>
-<div th:insert="header :: externalTransactionsBreadcrumb"></div>
-<h2 class="h2">Mes virements vers mon compte bancaire</h2>
-<h4><a th:href="@{/newExternalTransaction}">Effectuer un nouveau virement externe</a></h4>
+    <div th:insert="headerProfile :: header"></div>
+    <div th:insert="headerProfile :: externalTransactionsBreadcrumb"></div>
+    <div class="container p-5">
+        <div class="container">
+            <div class="row">
+                <h2 class="h2 col-8 text-start m-0 p-0">Mes virements vers mon compte bancaire</h2>
+                <a th:href="@{/newExternalTransaction}" class="btn btn-secondary col-3 offset-1">Nouveau virement
+                    externe</a>
+            </div>
+        </div>
 
+        <div class="mt-4 border border-dark border-2 text-center">
+
+            <table class="table table-striped ">
+                <thead class="bg-info text-white">
+                <tr>
+                    <th>Date</th>
+                    <th>Somme</th>
+                    <th>Description</th>
+                    <th>Compte</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${externalTransactions.empty}">
+                    <td colspan="12">Aucun virement externe</td>
+                </tr>
+                <tr th:each="externalTransaction: ${externalTransactions}">
+                    <td><span th:text="${externalTransaction.timestamp}"></span></td>
+                    <td><span th:text="${externalTransaction.amount}"></span></td>
+                    <td><span th:text="${externalTransaction.description}"></span></td>
+                    <td><span th:text="${externalTransaction.bankAccount.name}"></span></td>
+                    <td>
+                        <a th:href="@{/externalTransaction}">
+                            <button class="btn btn-info">Détails du compte</button>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 </body>
 </html>

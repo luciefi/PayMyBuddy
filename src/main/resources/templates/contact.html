@@ -3,39 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>Mes Contacts</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
 <div class="container">
-    <div th:insert="header :: header"></div>
-    <div th:insert="header :: contactBreadcrumb"></div>
-    <h2 class="h2">Mes contacts</h2>
-    <h4><a th:href="@{/createContact}">Ajouter un nouveau contact</a></h4>
-    <div class="table-responsive">
-        <table class="table table-striped table-sm">
-            <thead>
-            <tr>
-                <th>Prénom</th>
-                <th>Nom</th>
-                <th>Email</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${contacts.empty}">
-                <td colspan="3">Aucun contact enregistré</td>
-            </tr>
-            <tr th:each="contact: ${contacts}">
-                <td><span th:text="${contact.firstName}"> Prénom </span></td>
-                <td><span th:text="${contact.lastName}"> Nom </span></td>
-                <td><span th:text="${contact.email}"> Email </span></td>
-                <td>
-                    <a th:href="@{/deleteContact/{email}(email=${contact.email})}">
-                        <button class="btn btn-danger">Supprimer</button>
-                    </a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div th:insert="headerContact :: header"></div>
+    <div th:insert="headerContact :: contactBreadcrumb"></div>
+    <div class="container p-5">
+        <div class="container">
+            <div class="row">
+                <h2 class="h2 col-3 text-start m-0 p-0">Mes contacts</h2>
+                <a th:href="@{/createContact}" class="btn btn-secondary col-3 offset-6">Ajouter un nouveau contact</a>
+            </div>
+        </div>
+        <div class="mt-4 border border-dark border-2 text-center">
+            <table class="table table-striped">
+                <thead class="bg-info text-white">
+                <tr>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${contacts.empty}">
+                    <td colspan="3">Aucun contact enregistré</td>
+                </tr>
+                <tr th:each="contact: ${contacts}">
+                    <td><span th:text="${contact.firstName}"> Prénom </span></td>
+                    <td><span th:text="${contact.lastName}"> Nom </span></td>
+                    <td><span th:text="${contact.email}"> Email </span></td>
+                    <td>
+                        <button class="btn btn-danger" data-bs-toggle="modal" th:attr="data-bs-target=${'#deleteModal'+contact.email}"
+                                data-contact="${contact}">
+                            Supprimer
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" th:each="contact : ${contacts}" th:attr="id=${'deleteModal'+contact.email}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Voulez-vous supprimer ce contact ?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <a th:href="@{/deleteContact/{email}(email=${contact.email})}">
+                    <button class="btn btn-danger">Supprimer</button>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

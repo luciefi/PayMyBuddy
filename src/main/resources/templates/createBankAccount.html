@@ -7,11 +7,12 @@
 </head>
 <body>
 <div class="container">
-    <div th:insert="header :: header"></div>
-    <div th:insert="header :: addBankAccountBreadcrumb"></div>
+    <div th:insert="headerProfile :: header"></div>
+    <div th:insert="headerProfile :: addBankAccountBreadcrumb"></div>
     <h2 class="h2">Ajout d'un nouveau compte en banque</h2>
 
     <div>
+
         <form method="post"
               th:action="@{/createBankAccount}" th:object="${bankAccount}">
             <div class="form-group">

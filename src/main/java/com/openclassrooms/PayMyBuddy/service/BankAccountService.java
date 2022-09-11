@@ -29,8 +29,8 @@ public class BankAccountService implements IBankAccountService {
     }
 
     @Override
-    public List<BankAccount> getAll() {
-        return bankAccountRepository.findAll();
+    public List<BankAccount> getAllForCurrentUser() {
+        return bankAccountRepository.findByUserId(CurrentUserUtils.getCurrentUserId());
     }
 
     @Override
@@ -48,13 +48,6 @@ public class BankAccountService implements IBankAccountService {
         Calendar calendar = Calendar.getInstance();
         bankAccount.setDateOfCreation(new Timestamp(calendar.getTime().getTime()));
         return bankAccountRepository.save(bankAccount);
-    }
-
-    @Override
-    public void saveExternalTransaction(ExternalTransaction externalTransaction) {
-        // TODO créer un externalTransactionService ???
-        // TODO vérifier balance
-        // TODO avoir l'aval de la banque ?? comment ?
     }
 
     private boolean isBankAccountInvalid(BankAccount bankAccount) {

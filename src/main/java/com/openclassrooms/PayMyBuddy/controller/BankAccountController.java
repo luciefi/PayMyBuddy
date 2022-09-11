@@ -1,9 +1,7 @@
 package com.openclassrooms.PayMyBuddy.controller;
 
 import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException;
-import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
-import com.openclassrooms.PayMyBuddy.model.ExternalTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +21,7 @@ public class BankAccountController {
 
     @GetMapping("/bankAccount")
     public String bankAccounts(Model model) {
-        Iterable<BankAccount> bankAccounts = service.getAll();
+        Iterable<BankAccount> bankAccounts = service.getAllForCurrentUser();
         model.addAttribute("bankAccounts", bankAccounts);
         return "bankAccount";
     }

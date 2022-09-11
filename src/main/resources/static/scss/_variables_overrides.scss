@@ -1,8 +1,10 @@
-$primary: orange;
+$info: #00D061;
+$secondary: #2F4CD6;
 $light: #e9ecef;
+$warning: #6BDB53;
+$gradient: linear-gradient(.25turn, rgba($info, 1), rgba($warning, 1));
 
-
-// vert de l'icône : #00D061
+// vert de l'icône : #00D061 // #0FD25F
 // bleu de add connexion : #2F4CD6
 // gris du fil d'ariane : #F5F5F5
 // bleu du texte du fil d'ariane : #1E6FB8

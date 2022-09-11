@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Header profile</title>
+    <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<nav class="navbar navbar-expand" th:fragment="header">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/sitemap">
+            <span class="bg-info text-white bg-gradient p-2 rounded-3 text-light">Pay my buddy</span>
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/">Transfert</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/contact">Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/">Log off</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<nav class="navbar navbar-expand bg-light px-4 pt-3 pb-0" aria-label="breadcrumb" th:fragment="profileBreadcrumb">
+    <div class="container-fluid">
+        <ol class="breadcrumb mx-3">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+        </ol>
+    </div>
+</nav>
+
+<nav class="navbar navbar-expand bg-light px-4 pt-3 pb-0" aria-label="breadcrumb" th:fragment="addBankAccountBreadcrumb">
+    <ol class=" breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/bankAccount">Profile</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Ajouter un compte bancaire</li>
+    </ol>
+</nav>
+
+<nav class="navbar navbar-expand bg-light px-4 pt-3 pb-0" aria-label="breadcrumb" th:fragment="modifyBankAccountBreadcrumb">
+    <ol class=" breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/bankAccount">Profile</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Modifier mon compte bancaire</li>
+    </ol>
+</nav>
+<nav class="navbar navbar-expand bg-light px-4 pt-3 pb-0" aria-label="breadcrumb" th:fragment="externalTransactionsBreadcrumb">
+    <ol class=" breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/bankAccount">Profile</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Virements externes</li>
+    </ol>
+</nav>
+<nav class="navbar navbar-expand bg-light px-4 pt-3 pb-0" aria-label="breadcrumb" th:fragment="newExternalTransactionBreadcrumb">
+    <ol class=" breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/bankAccount">Profile</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/externalTransaction">Virements externes</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Nouveau virement</li>
+    </ol>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+<script src="http://localhost:35729/livereload.js"></script>
+
+</body>
+</html>

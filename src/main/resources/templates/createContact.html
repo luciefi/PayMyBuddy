@@ -6,10 +6,12 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<div class="container">
-    <div th:insert="header :: header"></div>
-    <div th:insert="header :: addContactBreadcrumb"></div>
-    <h2 class="h2">Ajout d'un nouveau contact</h2>
+<div class="container-fluid">
+    <div th:insert="headerContact :: header"></div>
+    <div th:insert="headerContact :: addContactBreadcrumb"></div>
+    <div class="container mx-100">
+
+    <h3 class="h3">Ajout d'un nouveau contact</h3>
     <div>
         <form method="post"
               th:action="@{/createContact}" th:object="${emailAddress}">
@@ -23,8 +25,9 @@
                         aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact">
                 <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Ajouter</button>
+            <button type="submit" class="btn btn-info">Ajouter</button>
         </form>
+    </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

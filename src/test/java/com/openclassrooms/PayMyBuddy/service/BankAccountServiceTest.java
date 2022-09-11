@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,11 +52,12 @@ class BankAccountServiceTest {
     @Test
     void getBankAccountsTest() {
         // ARRANGE
-        when(bankAccountRepository.findAll()).thenReturn(Collections.singletonList(new BankAccount()));
+        when(bankAccountRepository.findByUserId(anyLong())).thenReturn(Collections.singletonList(new BankAccount()));
 
         // ACT - ASSERT
-        assertEquals(1, bankAccountService.getAll().size());
-        verify(bankAccountRepository, Mockito.times(1)).findAll();
+        List<BankAccount> bankAccountList = bankAccountService.getAllForCurrentUser();
+        assertEquals(1, bankAccountList.size());
+        verify(bankAccountRepository, Mockito.times(1)).findByUserId(anyLong());
     }
 
     @Test

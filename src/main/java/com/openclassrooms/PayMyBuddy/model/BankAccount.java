@@ -29,7 +29,6 @@ public class BankAccount {
     private String bic;
     private String name;
 
-
     @Column(name = "date_of_creation")
     private Timestamp dateOfCreation;
 

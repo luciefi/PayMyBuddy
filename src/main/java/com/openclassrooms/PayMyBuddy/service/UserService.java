@@ -32,6 +32,27 @@ public class UserService implements IUserService {
         userRepository.deleteById(id);
     }
 
+    @Override
+    public float getBalance() {
+        User user = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        return user.getBalance();
+    }
+
+    @Override
+    public void updateBalance(Float amount, TransactionType type) throws InsufficientBalanceException {
+        User user = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        Float balance = user.getBalance();
+        if (type.equals(TransactionType.CREDIT_EXTERNAL_ACCOUNT)) {
+            if (balance < amount) {
+                throw new InsufficientBalanceException();
+            }
+            user.setBalance(balance - amount);
+        } else {
+            user.setBalance(balance + amount);
+        }
+        userRepository.save(user);
+    }
+
     public User saveUser(User user) {
         return userRepository.save(user);
     }
