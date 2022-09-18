@@ -29,16 +29,12 @@
             <div class="form-group">
                 <label for="ibanInput">IBAN</label>
                 <input
-                        type="text" th:field="*{iban}" class="form-control" id="ibanInput"
-                        aria-describedby="ibanHelp" placeholder="Saisir l'IBAN">
-                <span th:if="${#fields.hasErrors('iban')}" th:errors="*{iban}"></span>
+                        type="text" th:field="*{iban}" class="form-control" id="ibanInput" disabled>
             </div>
             <div class="form-group">
                 <label for="bicInput">BIC</label>
                 <input
-                        type="text" th:field="*{bic}" class="form-control" id="bicInput"
-                        aria-describedby="bicHelp" placeholder="Saisir le BIC">
-                <span th:if="${#fields.hasErrors('bic')}" th:errors="*{bic}"></span>
+                        type="text" th:field="*{bic}" class="form-control" id="bicInput" disabled>
             </div>
 
             <button type="submit" class="btn btn-primary">Enregistrer</button>

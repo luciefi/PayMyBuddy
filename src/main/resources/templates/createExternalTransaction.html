@@ -21,15 +21,19 @@
         <div th:unless="${bankAccounts.empty}">
             <form method="post"
                   th:action="@{/newExternalTransaction}" th:object="${externalTransactionDto}">
-                <ul th:if="${#fields.hasErrors('global')}">
-                    <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Virement impossible</li>
-                </ul>
-                <select class="form-control" id="bankAccountSelect" th:field="*{bankAccountId}">
-                    <option th:value="0" disabled hidden selected>Choisir un compte</option>
-                    <option th:each="bankAccount : ${bankAccounts}" th:value="${bankAccount.id}" th:text="${bankAccount.name}">
-                        Choisir le compte bancaire
-                    </option>
-                </select>
+                <div class="form-group">
+                    <ul th:if="${#fields.hasErrors('global')}">
+                        <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Virement impossible</li>
+                    </ul>
+                    <label class="form-label">Compte bancaire</label>
+                    <select class="form-control" id="bankAccountSelect" th:field="*{bankAccountId}">
+                        <option th:value="0" hidden selected>Choisir un compte</option>
+                        <option th:each="bankAccount : ${bankAccounts}" th:value="${bankAccount.id}" th:text="${bankAccount.name}">
+                            Choisir le compte bancaire
+                        </option>
+                    </select>
+                    <p th:if="${#fields.hasErrors('bankAccountId')}" th:errors="*{bankAccountId}"></p>
+                </div>
                 <div class="form-group">
                     <label class="form-label">Type</label>
                     <div class="form-check">
@@ -47,10 +51,9 @@
                 <div class="form-group">
                     <label for="montantInput" class="form-label">Montant</label>
                     <input
-                            type="number" th:field="*{amount}" class="form-control" id="montantInput"
+                            type="number" step="0.01" th:field="*{amount}" class="form-control" id="montantInput"
                             placeholder="Saisir le montant">
                     <p th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></p>
-
                     <p>Solde actuel : <span th:text="${balance}"></span>€</p>
                 </div>
                 <div class="form-group">

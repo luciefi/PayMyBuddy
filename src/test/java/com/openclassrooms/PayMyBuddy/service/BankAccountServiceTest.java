@@ -35,17 +35,17 @@ class BankAccountServiceTest {
     @InjectMocks
     private BankAccountService bankAccountService;
 
-    final Long BANK_ACCOUNT_ID_1 = Long.valueOf(1);
+    final Long BANK_ACCOUNT_ID_2 = Long.valueOf(2);
     final Long USER_ID_1 = Long.valueOf(1);
 
     @Test
     void getBankAccountTest() {
         // ARRANGE
         BankAccount ba = new BankAccount();
-        when(bankAccountRepository.findById(BANK_ACCOUNT_ID_1)).thenReturn(Optional.of(ba));
+        when(bankAccountRepository.findById(BANK_ACCOUNT_ID_2)).thenReturn(Optional.of(ba));
 
         // ACT - ASSERT
-        assertEquals(ba, bankAccountService.getById(BANK_ACCOUNT_ID_1));
+        assertEquals(ba, bankAccountService.getById(BANK_ACCOUNT_ID_2));
         verify(bankAccountRepository, Mockito.times(1)).findById(any(Long.class));
     }
 
@@ -62,9 +62,12 @@ class BankAccountServiceTest {
 
     @Test
     void deleteBankAccountTest() {
+        // ARRANGE
+        BankAccount bankAccount = new BankAccount();
+        when(bankAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankAccount));
         // ACT - ASSERT
-        bankAccountService.deleteBankAccount(BANK_ACCOUNT_ID_1);
-        verify(bankAccountRepository, Mockito.times(1)).deleteById(any(Long.class));
+        bankAccountService.deleteBankAccount(BANK_ACCOUNT_ID_2);
+        verify(bankAccountRepository, Mockito.times(1)).save(any(BankAccount.class));
     }
 
     @Test
@@ -72,7 +75,7 @@ class BankAccountServiceTest {
         // ARRANGE
         when(userRepository.findById(USER_ID_1)).thenReturn(Optional.of(new User()));
         BankAccount ba = new BankAccount();
-        ba.setId(BANK_ACCOUNT_ID_1);
+        ba.setId(BANK_ACCOUNT_ID_2);
 
         // ACT - ASSERT
         bankAccountService.saveBankAccount(ba);
@@ -93,7 +96,7 @@ class BankAccountServiceTest {
 
 
         BankAccount ba = new BankAccount();
-        ba.setId(BANK_ACCOUNT_ID_1);
+        ba.setId(BANK_ACCOUNT_ID_2);
 
         // ACT - ASSERT
         assertThrows(BankAccountAlreadyExistsException.class,

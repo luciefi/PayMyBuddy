@@ -46,7 +46,6 @@ class ContactServiceTest {
     final String PAYER_EMAIL = "payer@abc.com";
     final String RECIPIENT_EMAIL = "recipient@abc.com";
 
-
     @Test
     void getContacts() {
         // Arrange
@@ -194,16 +193,14 @@ class ContactServiceTest {
         User recipient = new User();
         recipient.setEmail(RECIPIENT_EMAIL);
         recipient.setId(RECIPIENT_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer));
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(recipient));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer)).thenReturn(Optional.of(recipient));
         when(payerRecipientRepository.findById(any(PayerRecipientId.class))).thenReturn(Optional.of(new PayerRecipient()));
 
         // Act
-        contactService.deleteContact(RECIPIENT_EMAIL);
+        contactService.deleteContact(RECIPIENT_ID);
 
         // Assert
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(userRepository, Mockito.times(1)).findByEmail(anyString());
+        verify(userRepository, Mockito.times(2)).findById(anyLong());
         verify(payerRecipientRepository, Mockito.times(1)).findById(any(PayerRecipientId.class));
     }
 
@@ -213,11 +210,10 @@ class ContactServiceTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
-        assertThrows(UserNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_EMAIL));
+        assertThrows(UserNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_ID));
 
         // Assert
         verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(userRepository, Mockito.never()).findByEmail(anyString());
         verify(payerRecipientRepository, Mockito.never()).findById(any(PayerRecipientId.class));
     }
 
@@ -227,15 +223,13 @@ class ContactServiceTest {
         User payer = new User();
         payer.setEmail(PAYER_EMAIL);
         payer.setId(PAYER_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer));
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer)).thenReturn(Optional.empty());
 
         // Act
-        assertThrows(UserNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_EMAIL));
+        assertThrows(UserNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_ID));
 
         // Assert
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(userRepository, Mockito.times(1)).findByEmail(anyString());
+        verify(userRepository, Mockito.times(2)).findById(anyLong());
         verify(payerRecipientRepository, Mockito.never()).findById(any(PayerRecipientId.class));
     }
 
@@ -248,16 +242,14 @@ class ContactServiceTest {
         User recipient = new User();
         recipient.setEmail(RECIPIENT_EMAIL);
         recipient.setId(RECIPIENT_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer));
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(recipient));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer)).thenReturn(Optional.of(recipient));
         when(payerRecipientRepository.findById(any(PayerRecipientId.class))).thenReturn(Optional.empty());
 
         // Act
-        assertThrows(PayerRecipientNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_EMAIL));
+        assertThrows(PayerRecipientNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_ID));
 
         // Assert
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(userRepository, Mockito.times(1)).findByEmail(anyString());
+        verify(userRepository, Mockito.times(2)).findById(anyLong());
         verify(payerRecipientRepository, Mockito.times(1)).findById(any(PayerRecipientId.class));
     }
 }

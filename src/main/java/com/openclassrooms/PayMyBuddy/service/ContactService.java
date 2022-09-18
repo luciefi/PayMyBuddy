@@ -63,9 +63,9 @@ public class ContactService implements IContactService {
     }
 
     @Override
-    public void deleteContact(String email) {
+    public void deleteContact(Long recipientId) {
         User payer = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
-        User recipient = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        User recipient = userRepository.findById(recipientId).orElseThrow(UserNotFoundException::new);
         PayerRecipientId payerRecipientId = new PayerRecipientId(payer.getId(), recipient.getId());
         PayerRecipient payerRecipient = payerRecipientRepository.findById(payerRecipientId).orElseThrow(PayerRecipientNotFoundException::new);
         payerRecipient.setDeleted(true);

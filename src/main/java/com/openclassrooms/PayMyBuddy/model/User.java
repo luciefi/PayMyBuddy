@@ -29,7 +29,7 @@ public class User {
     @Column(name = "last_online_time")
     private Timestamp lastOnlineTime;
 
-    private float balance ;
+    private double balance ;
 
     @Column(name = "first_name")
     private String firstName;

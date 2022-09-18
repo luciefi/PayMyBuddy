@@ -9,5 +9,5 @@ public interface IContactService {
 
     Iterable<ContactDto> getContacts();
 
-    void deleteContact(String email);
+    void deleteContact(Long payerRecipientId);
 }

@@ -33,31 +33,28 @@ public class ExternalTransactionService implements IExternalTransactionService {
     @Override
     public void saveExternalTransaction(ExternalTransactionDto externalTransactionDto) throws InsufficientBalanceException {
         ExternalTransaction externalTransaction = createExternalTransaction(externalTransactionDto);
-
         userService.updateBalance(externalTransaction.getAmount(), externalTransaction.getTransactionType());
-
         Calendar calendar = Calendar.getInstance();
         externalTransaction.getBankAccount().setLastTransactionDate(new Timestamp(calendar.getTime().getTime()));
         externalTransaction.setTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
-
         externalTransactionRepository.save(externalTransaction);
     }
 
     private ExternalTransaction createExternalTransaction(ExternalTransactionDto externalTransactionDto) {
-        BankAccount bankAccount = bankAccountRepository.findById(Long.valueOf(externalTransactionDto.getBankAccountId())).orElseThrow(BankAccountNotFoundException::new);
+        BankAccount bankAccount = bankAccountRepository.findById(externalTransactionDto.getBankAccountId()).orElseThrow(BankAccountNotFoundException::new);
         ExternalTransaction externalTransaction = ExternalTransactionUtils.convertToExternalTransaction(externalTransactionDto, bankAccount);
         externalTransaction.setUserId(CurrentUserUtils.getCurrentUserId());
         return externalTransaction;
     }
 
     @Override
-    public Iterable<ExternalTransaction> getAll() {
+    public List<ExternalTransaction> getAll() {
         return externalTransactionRepository.findByUserId(CurrentUserUtils.getCurrentUserId());
     }
 
     @Override
     public List<ExternalTransactionDto> getAllDto() {
-        List<ExternalTransaction> externalTransactionList = (List<ExternalTransaction>) getAll();
+        List<ExternalTransaction> externalTransactionList = getAll();
         List<ExternalTransactionDto> externalTransactionDtos = externalTransactionList.stream().map(externalTransaction -> ExternalTransactionUtils.convertToExternalTransactionDto(externalTransaction)).collect(Collectors.toList());
         return externalTransactionDtos;
     }

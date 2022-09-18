@@ -3,7 +3,6 @@ package com.openclassrooms.PayMyBuddy.service;
 import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
-import com.openclassrooms.PayMyBuddy.model.ExternalTransaction;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
@@ -35,7 +34,9 @@ public class BankAccountService implements IBankAccountService {
 
     @Override
     public void deleteBankAccount(final Long id) {
-        bankAccountRepository.deleteById(id);
+        BankAccount bankAccount = bankAccountRepository.findById(id).orElseThrow(BankAccountNotFoundException::new);
+        bankAccount.setDeactivated(true);
+        bankAccountRepository.save(bankAccount);
     }
 
     @Override
@@ -45,9 +46,22 @@ public class BankAccountService implements IBankAccountService {
         }
         User user = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(RuntimeException::new);
         bankAccount.setUser(user);
+        bankAccount.setDeactivated(false);
         Calendar calendar = Calendar.getInstance();
         bankAccount.setDateOfCreation(new Timestamp(calendar.getTime().getTime()));
         return bankAccountRepository.save(bankAccount);
+    }
+
+    @Override
+    public Iterable<BankAccount> getAllActiveForCurrentUser() {
+        return bankAccountRepository.findByUserIdAndDeactivated(CurrentUserUtils.getCurrentUserId(), false);
+    }
+
+    @Override
+    public void activateBankAccount(Long id) {
+        BankAccount bankAccount = bankAccountRepository.findById(id).orElseThrow(BankAccountNotFoundException::new);
+        bankAccount.setDeactivated(false);
+        bankAccountRepository.save(bankAccount);
     }
 
     private boolean isBankAccountInvalid(BankAccount bankAccount) {

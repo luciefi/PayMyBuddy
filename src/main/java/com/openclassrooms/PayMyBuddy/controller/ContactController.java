@@ -29,6 +29,8 @@ public class ContactController {
     public String contacts(Model model) {
         Iterable<ContactDto> contacts = service.getContacts();
         model.addAttribute("contacts", contacts);
+        EmailAddress emailAddress = new EmailAddress();
+        model.addAttribute("emailAddress", emailAddress);
         return "contact";
     }
 
@@ -41,7 +43,7 @@ public class ContactController {
 
 
     @PostMapping("/createContact")
-    public String createNewContact(@Valid EmailAddress emailAddress, BindingResult result) {
+    public String createNewContact(@Valid EmailAddress emailAddress, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "createContact";
         }
@@ -55,9 +57,28 @@ public class ContactController {
         }
     }
 
-    @GetMapping("/deleteContact/{email}")
-    public ModelAndView deleteContact(@PathVariable("email") final String email) {
-        service.deleteContact(email);
+    @PostMapping("/contact")
+    public String createContact(@Valid EmailAddress emailAddress, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            Iterable<ContactDto> contacts = service.getContacts();
+            model.addAttribute("contacts", contacts);
+            return "contact";
+        }
+        try {
+            service.saveContact(emailAddress.getAddress());
+            return "redirect:/contact";
+        } catch (UserNotFoundException | PayerRecipientAlreadyExistsException | ContactCannotBeCurrentUserException e) {
+            ObjectError error = new ObjectError("globalError", e.getMessage());
+            result.addError(error);
+            Iterable<ContactDto> contacts = service.getContacts();
+            model.addAttribute("contacts", contacts);
+            return "contact";
+        }
+    }
+
+    @GetMapping("/deleteContact/{recipientId}")
+    public ModelAndView deleteContact(@PathVariable("recipientId") final Long recipientId) {
+        service.deleteContact(recipientId);
         return new ModelAndView("redirect:/contact");
     }
 

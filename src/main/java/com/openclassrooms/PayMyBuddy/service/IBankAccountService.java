@@ -13,4 +13,7 @@ public interface IBankAccountService {
 
     BankAccount saveBankAccount(BankAccount bankAccount);
 
+    Iterable<BankAccount> getAllActiveForCurrentUser();
+
+    void activateBankAccount(Long id);
 }

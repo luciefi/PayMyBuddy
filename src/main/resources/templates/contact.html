@@ -10,6 +10,24 @@
     <div th:insert="headerContact :: header"></div>
     <div th:insert="headerContact :: contactBreadcrumb"></div>
     <div class="container p-5">
+        <h2 class="h2">Ajout d'un nouveau contact</h2>
+        <div>
+            <form method="post"
+                  th:action="@{/contact}" th:object="${emailAddress}">
+
+                <div class="form-group">
+                    <ul th:if="${#fields.hasErrors('global')}">
+                        <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Ce contact existe déjà.</li>
+                    </ul>
+                    <label for="emailInput" class="form-label ">Email</label>
+                    <input
+                            type="email" th:field="*{address}" class="form-control" id="emailInput"
+                            aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact">
+                    <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
+                </div>
+                <button type="submit" class="btn btn-info">Ajouter</button>
+            </form>
+        </div>
         <div class="container">
             <div class="row">
                 <h2 class="h2 col-3 text-start m-0 p-0">Mes contacts</h2>
@@ -35,7 +53,7 @@
                     <td><span th:text="${contact.lastName}"> Nom </span></td>
                     <td><span th:text="${contact.email}"> Email </span></td>
                     <td>
-                        <button class="btn btn-danger" data-bs-toggle="modal" th:attr="data-bs-target=${'#deleteModal'+contact.email}"
+                        <button class="btn btn-danger" data-bs-toggle="modal" th:attr="data-bs-target=${'#deleteModal'+contact.recipientId}"
                                 data-contact="${contact}">
                             Supprimer
                         </button>
@@ -47,7 +65,7 @@
     </div>
 </div>
 <!-- Modal -->
-<div class="modal fade" th:each="contact : ${contacts}" th:attr="id=${'deleteModal'+contact.email}" tabindex="-1">
+<div class="modal fade" th:each="contact : ${contacts}" th:attr="id=${'deleteModal'+contact.recipientId}" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -61,7 +79,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <a th:href="@{/deleteContact/{email}(email=${contact.email})}">
+                <a th:href="@{/deleteContact/{recipientId}(recipientId=${contact.recipientId})}">
                     <button class="btn btn-danger">Supprimer</button>
                 </a>
             </div>

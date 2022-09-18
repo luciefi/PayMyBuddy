@@ -42,9 +42,6 @@ public class BankAccountController {
 
     @PostMapping("/updateBankAccount")
     public String saveBankAccount(@Valid BankAccount bankAccount, BindingResult result) {
-       // Error err = new Error("message d'erreur");
-       // throw err;
-
         if (result.hasErrors()) {
             return "updateBankAccount";
         }
@@ -76,6 +73,12 @@ public class BankAccountController {
     @GetMapping("/deleteBankAccount/{id}")
     public ModelAndView deleteBankAccount(@PathVariable("id") final Long id) {
         service.deleteBankAccount(id);
+        return new ModelAndView("redirect:/bankAccount");
+    }
+
+    @GetMapping("/activateBankAccount/{id}")
+    public ModelAndView activateBankAccount(@PathVariable("id") final Long id) {
+        service.activateBankAccount(id);
         return new ModelAndView("redirect:/bankAccount");
     }
 

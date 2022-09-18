@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Ajouter un nouveau contact</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
 <div class="container-fluid">
@@ -11,23 +11,23 @@
     <div th:insert="headerContact :: addContactBreadcrumb"></div>
     <div class="container mx-100">
 
-    <h3 class="h3">Ajout d'un nouveau contact</h3>
-    <div>
-        <form method="post"
-              th:action="@{/createContact}" th:object="${emailAddress}">
-            <div class="form-group">
-                <ul th:if="${#fields.hasErrors('global')}">
-                    <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Ce contact existe déjà.</li>
-                </ul>
-                <label for="emailInput" class="form-label">Email</label>
-                <input
-                        type="text"  th:field="*{address}"  class="form-control" id="emailInput"
-                        aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact">
-                <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
-            </div>
-            <button type="submit" class="btn btn-info">Ajouter</button>
-        </form>
-    </div>
+        <h3 class="h3">Ajout d'un nouveau contact</h3>
+        <div>
+            <form method="post"
+                  th:action="@{/createContact}" th:object="${emailAddress}">
+                <div class="form-group">
+                    <ul th:if="${#fields.hasErrors('global')}">
+                        <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Ce contact existe déjà.</li>
+                    </ul>
+                    <label for="emailInput" class="form-label">Email</label>
+                    <input
+                            type="text" th:field="*{address}" class="form-control" id="emailInput"
+                            aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact">
+                    <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
+                </div>
+                <button type="submit" class="btn btn-info">Ajouter</button>
+            </form>
+        </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

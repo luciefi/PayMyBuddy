@@ -1,5 +1,7 @@
 package com.openclassrooms.PayMyBuddy.controller;
 
+import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
+import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
 import com.openclassrooms.PayMyBuddy.model.ExternalTransactionDto;
 import com.openclassrooms.PayMyBuddy.service.BankAccountService;
@@ -38,29 +40,31 @@ public class ExternalTransactionController {
     public String createExternalTransaction(Model model) {
         ExternalTransactionDto externalTransactionDto = new ExternalTransactionDto();
         model.addAttribute("externalTransactionDto", externalTransactionDto);
-        Iterable<BankAccount> bankAccounts = bankAccountService.getAllForCurrentUser();
-        model.addAttribute("bankAccounts", bankAccounts);
-        float balance = userService.getBalance();
-        model.addAttribute("balance", balance);
+        addAttributesToModel(model);
         return "createExternalTransaction";
     }
 
     @PostMapping("/newExternalTransaction")
     public String saveNewExternalTransaction(@Valid ExternalTransactionDto externalTransactionDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            Iterable<BankAccount> bankAccounts = bankAccountService.getAllForCurrentUser();
-            model.addAttribute("bankAccounts", bankAccounts);
-            float balance = userService.getBalance();
-            model.addAttribute("balance", balance);
+            addAttributesToModel(model);
             return "createExternalTransaction";
         }
         try {
             service.saveExternalTransaction(externalTransactionDto);
             return "redirect:/externalTransaction";
-        } catch (Exception e) {  // TODO préciser type
+        } catch (BankAccountNotFoundException | InsufficientBalanceException e) {
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
+            addAttributesToModel(model);
             return "createExternalTransaction";
         }
+    }
+
+    private void addAttributesToModel(Model model) {
+        Iterable<BankAccount> bankAccounts = bankAccountService.getAllActiveForCurrentUser();
+        model.addAttribute("bankAccounts", bankAccounts);
+        double balance = userService.getBalance();
+        model.addAttribute("balance", balance);
     }
 }

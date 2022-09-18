@@ -27,6 +27,7 @@ public class BankAccountControllerTest {
 
     @MockBean
     BankAccountService bankAccountService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -135,7 +136,7 @@ public class BankAccountControllerTest {
 
     @Test
     void deleteBankAccount() throws Exception {
-            mockMvc.perform(get("/deleteBankAccount/1")).andExpect(status().isFound());
-            verify(bankAccountService, Mockito.times(1)).deleteBankAccount(any());
+        mockMvc.perform(get("/deleteBankAccount/1")).andExpect(status().isFound());
+        verify(bankAccountService, Mockito.times(1)).deleteBankAccount(any());
     }
 }

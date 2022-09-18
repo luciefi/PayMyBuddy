@@ -12,4 +12,6 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Long> 
     List<BankAccount> findByIbanAndBicAndUserId(String iban, String bic, Long currentUser);
 
     List<BankAccount> findByUserId(Long currentUserId);
+
+    Iterable<BankAccount> findByUserIdAndDeactivated(Long currentUserId, boolean deactivated);
 }

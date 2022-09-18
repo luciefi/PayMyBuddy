@@ -11,6 +11,7 @@ public class ContactUtils {
         contactDto.setEmail(user.getEmail());
         contactDto.setFirstName(user.getFirstName());
         contactDto.setLastName(user.getLastName());
+        contactDto.setRecipientId(payerRecipient.getRecipientId());
         return contactDto;
     }
 }

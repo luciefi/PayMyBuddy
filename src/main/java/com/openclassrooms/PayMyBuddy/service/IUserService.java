@@ -1,8 +1,6 @@
 package com.openclassrooms.PayMyBuddy.service;
 
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
-import com.openclassrooms.PayMyBuddy.model.ContactDto;
-import com.openclassrooms.PayMyBuddy.model.EmailAddress;
 import com.openclassrooms.PayMyBuddy.model.TransactionType;
 import com.openclassrooms.PayMyBuddy.model.User;
 
@@ -15,7 +13,9 @@ public interface IUserService {
 
     void deleteUser(Long id);
 
-    float getBalance();
+    double getBalance();
 
-    void updateBalance(Float amount, TransactionType type) throws InsufficientBalanceException;
+    void updateBalance(Double amount, TransactionType type) throws InsufficientBalanceException;
+
+    User saveUser(User user);
 }

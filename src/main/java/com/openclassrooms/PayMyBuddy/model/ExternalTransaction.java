@@ -16,8 +16,8 @@ public class ExternalTransaction {
 
     @NotNull(message = "Saisir le montant")
     @Positive(message="Le montant doit être supérieur à 0")
-    @Digits(message = "Le montant doit être un nombre", integer = 8, fraction = 2)
-    Float amount;
+    @Max(value=1000000, message =  "Le montant doit être inférieur à un million.")
+    Double amount;
 
     private String description;
 

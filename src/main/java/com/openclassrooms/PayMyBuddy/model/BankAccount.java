@@ -35,4 +35,6 @@ public class BankAccount {
     @Column(name = "last_transaction_date")
     private Timestamp lastTransactionDate;
 
+    private boolean deactivated;
+
 }
