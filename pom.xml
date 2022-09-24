@@ -89,10 +89,8 @@
 			<version>0.8.7</version>
 			<configuration>
 				<excludes>
-					<exclude>com/openclassrooms/safetyNet/model/*</exclude>
-					<exclude>com/openclassrooms/safetyNet/dto/*</exclude>
-					<exclude>**/*DataSource.class</exclude>
-					<exclude>**/*SafetyNetApplication.class</exclude>
+					<exclude>com/openclassrooms/PayMyBuddy/model/*</exclude>
+					<exclude>**/*PayMyBuddyApplication.class</exclude>
 				</excludes>
 			</configuration>
 			<executions>

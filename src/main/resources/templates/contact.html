@@ -10,27 +10,36 @@
     <div th:insert="headerContact :: header"></div>
     <div th:insert="headerContact :: contactBreadcrumb"></div>
     <div class="container p-5">
-        <h2 class="h2">Ajout d'un nouveau contact</h2>
-        <div>
+        <h3 class="h3">Ajout d'un nouveau contact</h3>
+        <div class="bg-light p-3 mb-3">
             <form method="post"
                   th:action="@{/contact}" th:object="${emailAddress}">
 
-                <div class="form-group">
-                    <ul th:if="${#fields.hasErrors('global')}">
+                <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                    <ul>
                         <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Ce contact existe déjà.</li>
                     </ul>
-                    <label for="emailInput" class="form-label ">Email</label>
-                    <input
-                            type="email" th:field="*{address}" class="form-control" id="emailInput"
-                            aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact">
-                    <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
                 </div>
-                <button type="submit" class="btn btn-info">Ajouter</button>
+                <div class="container">
+                    <div class="row d-flex align-items-center">
+                        <div class="col-2 text-end">
+                            <label for="emailInput" class="form-label">Email : </label>
+                        </div>
+                        <div class="col-8">
+                            <input type="email" th:field="*{address}" class="form-control" id="emailInput"
+                                   aria-describedby="emailHelp" placeholder="Saisir l'email du nouveau contact">
+                        </div>
+                        <div class="col-2 d-grid">
+                            <button type="submit" class="btn btn-info">Ajouter</button>
+                        </div>
+                    </div>
+                    <span class="col-7 offset-2" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
+                </div>
             </form>
         </div>
         <div class="container">
             <div class="row">
-                <h2 class="h2 col-3 text-start m-0 p-0">Mes contacts</h2>
+                <h3 class="h3 col-3 text-start m-0 p-0">Mes contacts</h3>
                 <a th:href="@{/createContact}" class="btn btn-secondary col-3 offset-6">Ajouter un nouveau contact</a>
             </div>
         </div>
