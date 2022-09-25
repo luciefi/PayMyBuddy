@@ -13,6 +13,7 @@ public class ExternalTransactionDto {
     @Pattern(regexp = "0*[1-9]+[0-9]{0,7}(,[0-9]([0-9])?)?|0*[0-9]{1,8},[1-9]([0-9])?|0*[0-9]{1,8},[0-9]([1-9])?", message = "Le montant doit " +
             "être supérieur à 0")
             */
+    // TODO clean up
     @NotNull(message = "Saisir le montant")
     @Positive(message = "Le montant doit être supérieur à 0.")
     @Max(value = 1000000, message = "Le montant doit être inférieur à un million.")

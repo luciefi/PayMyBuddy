@@ -41,7 +41,6 @@ public class ContactController {
         return "createContact";
     }
 
-
     @PostMapping("/createContact")
     public String createNewContact(@Valid EmailAddress emailAddress, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -81,5 +80,4 @@ public class ContactController {
         service.deleteContact(recipientId);
         return new ModelAndView("redirect:/contact");
     }
-
 }

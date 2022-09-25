@@ -18,4 +18,8 @@ public interface IUserService {
     void updateBalance(Double amount, TransactionType type) throws InsufficientBalanceException;
 
     User saveUser(User user);
+
+    void debitBalance(double v) throws InsufficientBalanceException;
+
+    void creditBalance(Double amount, Long recipientId) throws InsufficientBalanceException;
 }
