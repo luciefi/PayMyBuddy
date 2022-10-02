@@ -17,9 +17,8 @@
             </div>
         </div>
         <div class="bg-light p-3 mb-3">
-            <--! TODO tout mettre sur une seule ligne -->
             <form method="post"
-                  th:action="@{/transaction}" th:object="${newTransactionDto}">
+                  th:action="@{/transaction}" th:object="${transactionDto}">
                 <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
                     <ul>
                         <li th:each="err : ${#fields.errors('global')}" th:text="${err}"></li>
@@ -27,31 +26,34 @@
                 </div>
                 <div class="container">
                     <div class="row">
-                        <div class="col-5 form-group">
+                        <div class="col-3 form-group">
                             <select class="form-control" id="contactSelect" th:field="*{contactId}">
                                 <option th:value="0" hidden selected>Choisir un contact</option>
                                 <option th:each="contact : ${contacts}" th:value="${contact.recipientId}"
-                                        th:text="${contact.firstName + ' ' +contact.lastName}">
+                                        th:text="${contact.firstName + ' ' + contact.lastName}">
                                     Choisir le contact
                                 </option>
                             </select>
-                            <p th:if="${#fields.hasErrors('contactId')}" th:errors="*{contactId}"></p>
                         </div>
-                        <div class="col-5 form-group">
+                        <div class="col-2 form-group">
                             <input
                                     type="number" step="0.01" th:field="*{amount}" class="form-control" id="montantInput"
-                                    placeholder="Saisir le montant">
-                            <p th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></p>
-                            <p>Solde actuel : <span th:text="${balance}"></span>€</p>
+                                    placeholder="Montant">
                         </div>
-                    </div>
-                    <div class="row d-flex align-items-center">
-                        <div class="col-8">
+                        <div class="col-5">
                             <input type="text" th:field="*{description}" class="form-control" id="descriptionInput"
                                    placeholder="Saisir la description du virement" maxlength="64">
                         </div>
-                        <div class="col-2 d-grid">
-                            <button type="submit" class="btn btn-info">Payer</button>
+                        <div class="col-2 d-flex justify-content-center">
+                            <button type="submit" class="btn btn-info flex-fill ">Payer</button>
+                        </div>
+                    </div>
+                    <div class="row d-flex align-items-center">
+                        <div class="col-3 form-group">
+                            <p th:if="${#fields.hasErrors('contactId')}" th:errors="*{contactId}"></p>
+                        </div>
+                        <div class="col-2 form-group">
+                            <p th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></p>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 package com.openclassrooms.PayMyBuddy.service;
 
 import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException;
+import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.BankAccountRepository;
@@ -20,8 +21,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BankAccountServiceTest {
@@ -46,7 +46,7 @@ class BankAccountServiceTest {
 
         // ACT - ASSERT
         assertEquals(ba, bankAccountService.getById(BANK_ACCOUNT_ID_2));
-        verify(bankAccountRepository, Mockito.times(1)).findById(any(Long.class));
+        verify(bankAccountRepository, times(1)).findById(any(Long.class));
     }
 
     @Test
@@ -57,7 +57,7 @@ class BankAccountServiceTest {
         // ACT - ASSERT
         List<BankAccount> bankAccountList = bankAccountService.getAllForCurrentUser();
         assertEquals(1, bankAccountList.size());
-        verify(bankAccountRepository, Mockito.times(1)).findByUserId(anyLong());
+        verify(bankAccountRepository, times(1)).findByUserId(anyLong());
     }
 
     @Test
@@ -67,7 +67,7 @@ class BankAccountServiceTest {
         when(bankAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankAccount));
         // ACT - ASSERT
         bankAccountService.deleteBankAccount(BANK_ACCOUNT_ID_2);
-        verify(bankAccountRepository, Mockito.times(1)).save(any(BankAccount.class));
+        verify(bankAccountRepository, times(1)).save(any(BankAccount.class));
     }
 
     @Test
@@ -80,9 +80,9 @@ class BankAccountServiceTest {
         // ACT - ASSERT
         bankAccountService.saveBankAccount(ba);
         //TODO mock current user utils ??
-        verify(userRepository, Mockito.times(1)).findById(USER_ID_1);
-        verify(bankAccountRepository, Mockito.times(1)).save(any(BankAccount.class));
-        verify(bankAccountRepository, Mockito.times(1)).findByIbanAndBicAndUserIdAndIdNot(any(),
+        verify(userRepository, times(1)).findById(USER_ID_1);
+        verify(bankAccountRepository, times(1)).save(any(BankAccount.class));
+        verify(bankAccountRepository, times(1)).findByIbanAndBicAndUserIdAndIdNot(any(),
                 any(), any(Long.class), any(Long.class));
     }
 
@@ -102,8 +102,8 @@ class BankAccountServiceTest {
         assertThrows(BankAccountAlreadyExistsException.class,
                 () -> bankAccountService.saveBankAccount(ba));
         //TODO mock current user utils ??
-        verify(userRepository, Mockito.times(0)).findById(USER_ID_1);
-        verify(bankAccountRepository, Mockito.times(0)).save(any(BankAccount.class));
+        verify(userRepository, times(0)).findById(USER_ID_1);
+        verify(bankAccountRepository, times(0)).save(any(BankAccount.class));
     }
 
     @Test
@@ -116,9 +116,52 @@ class BankAccountServiceTest {
         bankAccountService.saveBankAccount(ba);
 
         //TODO mock current user utils ??
-        verify(userRepository, Mockito.times(1)).findById(USER_ID_1);
-        verify(bankAccountRepository, Mockito.times(1)).findByIbanAndBicAndUserId(any(),
+        verify(userRepository, times(1)).findById(USER_ID_1);
+        verify(bankAccountRepository, times(1)).findByIbanAndBicAndUserId(any(),
                 any(), any(Long.class));
-        verify(bankAccountRepository, Mockito.times(1)).save(any(BankAccount.class));
+        verify(bankAccountRepository, times(1)).save(any(BankAccount.class));
+    }
+
+    @Test
+    void getAllActiveForCurrentUser() {
+        // ARRANGE
+        BankAccount ba = new BankAccount();
+        ba.setId(BANK_ACCOUNT_ID_2);
+        when(bankAccountRepository.findByUserIdAndDeactivated(anyLong(), anyBoolean())).thenReturn(Collections.singletonList(ba));
+
+        // ACT
+        List<BankAccount> bankAccountList = (List<BankAccount>) bankAccountService.getAllActiveForCurrentUser();
+
+        // ASSERT
+        verify(bankAccountRepository, times(1)).findByUserIdAndDeactivated(anyLong(), anyBoolean());
+        assertEquals(1, bankAccountList.size());
+    }
+
+    @Test
+    void activateBankAccount() {
+        // ARRANGE
+        BankAccount ba = new BankAccount();
+        ba.setId(BANK_ACCOUNT_ID_2);
+        when(bankAccountRepository.findById(anyLong())).thenReturn(Optional.of(ba));
+
+        // ACT
+        bankAccountService.activateBankAccount(1L);
+
+        // ASSERT
+        verify(bankAccountRepository, times(1)).findById(anyLong());
+        verify(bankAccountRepository, times(1)).save(any(BankAccount.class));
+    }
+
+    @Test
+    void activateBankAccountUserNotFound() {
+        // ARRANGE
+        when(bankAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // ACT
+        assertThrows(BankAccountNotFoundException.class, () -> bankAccountService.activateBankAccount(1L));
+
+        // ASSERT
+        verify(bankAccountRepository, times(1)).findById(anyLong());
+        verify(bankAccountRepository, never()).save(any(BankAccount.class));
     }
 }

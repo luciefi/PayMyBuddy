@@ -49,17 +49,8 @@ class ContactControllerTest {
     }
 
     @Test
-    void createContact() throws Exception {
-        mockMvc.perform(get("/createContact")
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(view().name("createContact"));
-    }
-
-    @Test
     void createNewContact() throws Exception {
-        mockMvc.perform(post("/createContact")
+        mockMvc.perform(post("/contact")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("emailAddress=abcd@efg.hi")
                 )
@@ -67,64 +58,68 @@ class ContactControllerTest {
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/contact"));
         verify(contactService, Mockito.times(1)).saveContact(anyString());
+        verify(contactService, Mockito.times(0)).getContacts();
     }
 
 
     @Test
     void createNewContactHasError() throws Exception {
-        mockMvc.perform(post("/createContact")
+        mockMvc.perform(post("/contact")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("emailAddress=")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createContact"))
+                .andExpect(view().name("contact"))
                 .andExpect(content().string(containsString("ne peut pas être vide")));
+        verify(contactService, Mockito.times(1)).getContacts();
         verify(contactService, Mockito.times(0)).saveContact(anyString());
     }
 
     @Test
     void createNewContactUserNotFound() throws Exception {
         when(contactService.saveContact(anyString())).thenThrow(new CurrentUserNotFoundException());
-        mockMvc.perform(post("/createContact")
+        mockMvc.perform(post("/contact")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("emailAddress=abcd@efg.hi")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createContact"))
+                .andExpect(view().name("contact"))
                 .andExpect(content().string(containsString("a pas pu être trouvé")));
         verify(contactService, Mockito.times(1)).saveContact(anyString());
+        verify(contactService, Mockito.times(1)).getContacts();
     }
 
     @Test
     void createNewContactPayerRecipientAlreadyExistsException() throws Exception {
         when(contactService.saveContact(anyString())).thenThrow(new PayerRecipientAlreadyExistsException());
-        mockMvc.perform(post("/createContact")
+        mockMvc.perform(post("/contact")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("emailAddress=abcd@efg.hi")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createContact"))
+                .andExpect(view().name("contact"))
                 .andExpect(content().string(containsString("Ce contact existe déjà.")));
         verify(contactService, Mockito.times(1)).saveContact(anyString());
+        verify(contactService, Mockito.times(1)).getContacts();
     }
 
     @Test
     void createNewContactContactCannotBeCurrentUserException() throws Exception {
         when(contactService.saveContact(anyString())).thenThrow(new ContactCannotBeCurrentUserException());
-        mockMvc.perform(post("/createContact")
+        mockMvc.perform(post("/contact")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("emailAddress=abcd@efg.hi")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createContact"))
+                .andExpect(view().name("contact"))
                 .andExpect(content().string(containsString("email doit être différent du vôtre")));
         verify(contactService, Mockito.times(1)).saveContact(anyString());
+        verify(contactService, Mockito.times(1)).getContacts();
     }
-
 
     @Test
     void deleteContact() throws Exception {

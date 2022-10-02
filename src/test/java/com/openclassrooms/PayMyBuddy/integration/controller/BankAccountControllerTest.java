@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -138,5 +139,11 @@ public class BankAccountControllerTest {
     void deleteBankAccount() throws Exception {
         mockMvc.perform(get("/deleteBankAccount/1")).andExpect(status().isFound());
         verify(bankAccountService, Mockito.times(1)).deleteBankAccount(any());
+    }
+
+    @Test
+    void activateBankAccount() throws Exception {
+        mockMvc.perform(get("/activateBankAccount/1")).andExpect(status().isFound());
+        verify(bankAccountService, Mockito.times(1)).activateBankAccount(anyLong());
     }
 }

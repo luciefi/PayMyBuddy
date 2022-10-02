@@ -32,19 +32,19 @@ public class TransactionController {
     @GetMapping("/transaction")
     public String transactions(Model model) {
         addAttributesToModel(model);
-        TransactionDto newTransaction = new TransactionDto();
-        model.addAttribute("newTransactionDto", newTransaction);
+        TransactionDto transactionDto = new TransactionDto();
+        model.addAttribute("transactionDto", transactionDto);
         return "transactions";
     }
 
     @PostMapping("/transaction")
-    public String saveNewExternalTransaction(@Valid TransactionDto newTransactionDto, BindingResult result, Model model) {
+    public String saveNewTransaction(@Valid TransactionDto transactionDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
             addAttributesToModel(model);
             return "transactions";
         }
         try {
-            service.saveTransaction(newTransactionDto);
+            service.saveTransaction(transactionDto);
             return "redirect:/transaction";
         } catch (UserNotFoundException | InsufficientBalanceException e) { // TODO
             ObjectError error = new ObjectError("globalError", e.getMessage());
@@ -59,7 +59,5 @@ public class TransactionController {
         model.addAttribute("transactions", transactions);
         Iterable<ContactDto> contacts = contactService.getContacts();
         model.addAttribute("contacts", contacts);
-        double balance = userService.getBalance();
-        model.addAttribute("balance", balance);
     }
 }

@@ -3,7 +3,6 @@ package com.openclassrooms.PayMyBuddy.controller;
 import com.openclassrooms.PayMyBuddy.exception.ContactCannotBeCurrentUserException;
 import com.openclassrooms.PayMyBuddy.exception.PayerRecipientAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
-import com.openclassrooms.PayMyBuddy.model.BankAccount;
 import com.openclassrooms.PayMyBuddy.model.ContactDto;
 import com.openclassrooms.PayMyBuddy.model.EmailAddress;
 import com.openclassrooms.PayMyBuddy.service.IContactService;
@@ -32,28 +31,6 @@ public class ContactController {
         EmailAddress emailAddress = new EmailAddress();
         model.addAttribute("emailAddress", emailAddress);
         return "contact";
-    }
-
-    @GetMapping("/createContact")
-    public String createContact(Model model) {
-        EmailAddress emailAddress = new EmailAddress();
-        model.addAttribute("emailAddress", emailAddress);
-        return "createContact";
-    }
-
-    @PostMapping("/createContact")
-    public String createNewContact(@Valid EmailAddress emailAddress, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "createContact";
-        }
-        try {
-            service.saveContact(emailAddress.getAddress());
-            return "redirect:/contact";
-        } catch (UserNotFoundException | PayerRecipientAlreadyExistsException | ContactCannotBeCurrentUserException e) {
-            ObjectError error = new ObjectError("globalError", e.getMessage());
-            result.addError(error);
-            return "createContact";
-        }
     }
 
     @PostMapping("/contact")

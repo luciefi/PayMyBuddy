@@ -28,7 +28,9 @@ public class TransactionService implements ITransactionService {
     public static final double COMMISSION_RATE = .005;
 
     public List<TransactionDto> getAll() {
-        return transactionRepository.findByPayerIdOrRecipientId(CurrentUserUtils.getCurrentUserId(), CurrentUserUtils.getCurrentUserId())
+        List<Transaction> transactions = transactionRepository.findByPayerIdOrRecipientIdOrderByTimestampDesc(CurrentUserUtils.getCurrentUserId(),
+                CurrentUserUtils.getCurrentUserId());
+        return transactions
                 .stream()
                 .map(TransactionUtils::convertToTransactionDto)
                 .collect(Collectors.toList());
@@ -37,7 +39,7 @@ public class TransactionService implements ITransactionService {
     public void saveTransaction(TransactionDto transactionDto) throws InsufficientBalanceException {
         User recipient = userRepository.findById(transactionDto.getContactId()).orElseThrow(UserNotFoundException::new);
         Transaction transaction = TransactionUtils.convertToTransaction(transactionDto, recipient);
-        Double amountWithCommission = transaction.getAmount() * (1 + COMMISSION_RATE);
+        double amountWithCommission = transaction.getAmount() * (1 + COMMISSION_RATE);
         userService.debitBalance(amountWithCommission);
         userService.creditBalance(transaction.getAmount(), transactionDto.getContactId());
         transactionRepository.save(transaction);

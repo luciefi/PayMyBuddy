@@ -5,6 +5,7 @@ import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.TransactionType;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
+import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,8 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -49,7 +49,7 @@ class UserServiceTest {
 
         // ACT - ASSERT
         assertEquals(10f, userService.getBalance());
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -59,7 +59,7 @@ class UserServiceTest {
 
         // ACT - ASSERT
         assertThrows(UserNotFoundException.class, () -> userService.getBalance());
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -73,9 +73,9 @@ class UserServiceTest {
         userService.updateBalance(5d, TransactionType.DEBIT_EXTERNAL_ACCOUNT);
 
         // ASSERT
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
         assertEquals(15f, user.getBalance());
-        verify(userRepository, Mockito.times(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
 
@@ -90,9 +90,9 @@ class UserServiceTest {
         userService.updateBalance(5d, TransactionType.CREDIT_EXTERNAL_ACCOUNT);
 
         // ASSERT
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
         assertEquals(5f, user.getBalance());
-        verify(userRepository, Mockito.times(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -106,9 +106,9 @@ class UserServiceTest {
         assertThrows(InsufficientBalanceException.class, () -> userService.updateBalance(50d, TransactionType.CREDIT_EXTERNAL_ACCOUNT));
 
         // ASSERT
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
         assertEquals(10f, user.getBalance());
-        verify(userRepository, Mockito.times(0)).save(any(User.class));
+        verify(userRepository, times(0)).save(any(User.class));
     }
 
     @Test
@@ -118,7 +118,78 @@ class UserServiceTest {
 
         // ACT - ASSERT
         assertThrows(UserNotFoundException.class, () -> userService.updateBalance(1d, TransactionType.CREDIT_EXTERNAL_ACCOUNT));
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void debitBalance() throws InsufficientBalanceException {
+        // Arrange
+        User user = new User();
+        user.setBalance(10000d);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        // Act
+        userService.debitBalance(1d);
+
+        // Assert
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void debitBalanceUserNotFound() throws InsufficientBalanceException {
+        // Arrange
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        assertThrows(UserNotFoundException.class, () -> userService.debitBalance(1d));
+
+        // Assert
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(0)).save(any(User.class));
+    }
+
+    @Test
+    void debitBalanceInsufficientBalanceException() {
+        // Arrange
+        User user = new User();
+        user.setBalance(0d);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        // Act
+        assertThrows(InsufficientBalanceException.class, () -> userService.debitBalance(1d));
+
+        // Assert
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(0)).save(any(User.class));
+    }
+
+    @Test
+    void creditBalance() {
+        // Arrange
+        User user = new User();
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        // Act
+        userService.creditBalance(1d, 1L);
+
+        // Assert
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void creditBalanceUserNotFound() {
+        // Arrange
+        User user = new User();
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        assertThrows(UserNotFoundException.class, () -> userService.creditBalance(1d, 1L));
+
+        // Assert
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
