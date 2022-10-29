@@ -10,6 +10,7 @@
 
     <div th:insert="headerProfile :: header"></div>
     <div th:insert="headerProfile :: externalTransactionsBreadcrumb"></div>
+
     <div class="container p-5">
         <div class="container">
             <div class="row">
@@ -18,7 +19,10 @@
                     externe</a>
             </div>
         </div>
-
+        <div class="alert alert-success alert-dismissible fade show my-1" role="alert" th:unless="${#strings.isEmpty(message)}">
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         <div class="mt-4 border border-dark border-2 text-center">
             <table class="table table-striped ">
                 <thead class="bg-info text-white">
@@ -27,7 +31,6 @@
                     <th>Somme</th>
                     <th>Description</th>
                     <th>Compte</th>
-                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -37,47 +40,17 @@
                 <tr th:each="externalTransaction: ${externalTransactions}">
                     <td><span th:text="${externalTransaction.timestamp}"></span></td>
                     <td><span th:text="${externalTransaction.transactionType eq '0'}? '-' : '+'"></span>
-                        <span
-                                th:text="${externalTransaction.amount}"></span></td>
+                        <span th:text="${externalTransaction.amount}"></span></td>
                     <td><span th:text="${externalTransaction.description}"></span></td>
                     <td><span th:text="${externalTransaction.bankAccount.name}"></span></td>
-                    <td>
-                        <button class="btn btn-info" data-bs-toggle="modal"
-                                th:attr="data-bs-target=${'#detailsModal'+externalTransaction.bankAccountId}">
-                            Détails du compte
-                        </button>
-                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<!-- Modal détails compte-->
-<div class="modal fade" th:each="externalTransaction: ${externalTransactions}" th:attr="id=${'detailsModal'+ externalTransaction.bankAccountId}"
-     tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Détails du compte</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>
-                    Nom : <span th:text="${externalTransaction.bankAccount.name}"></span>
-                </p>
-                <p>
-                    IBAN : <span th:text="${externalTransaction.bankAccount.iban}"></span>
-                </p>
-                <p>
-                    BIC : <span th:text="${externalTransaction.bankAccount.bic}"></span>
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 </body>
 </html>

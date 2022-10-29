@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 
@@ -29,6 +30,8 @@ public class TransactionController {
     @Autowired
     private IContactService contactService;
 
+    public static String TRANSACTION_SUCCESS_MESSAGE = "Le virement a été effectué !";
+
     @GetMapping("/transaction")
     public String transactions(Model model) {
         addAttributesToModel(model);
@@ -38,13 +41,14 @@ public class TransactionController {
     }
 
     @PostMapping("/transaction")
-    public String saveNewTransaction(@Valid TransactionDto transactionDto, BindingResult result, Model model) {
+    public String saveNewTransaction(@Valid TransactionDto transactionDto, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             addAttributesToModel(model);
             return "transactions";
         }
         try {
             service.saveTransaction(transactionDto);
+            redirectAttributes.addFlashAttribute("message", TRANSACTION_SUCCESS_MESSAGE);
             return "redirect:/transaction";
         } catch (UserNotFoundException | InsufficientBalanceException e) { // TODO
             ObjectError error = new ObjectError("globalError", e.getMessage());

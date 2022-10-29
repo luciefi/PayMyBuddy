@@ -9,6 +9,7 @@ import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import com.openclassrooms.PayMyBuddy.utils.TransactionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ public class TransactionService implements ITransactionService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void saveTransaction(TransactionDto transactionDto) throws InsufficientBalanceException {
         User recipient = userRepository.findById(transactionDto.getContactId()).orElseThrow(UserNotFoundException::new);
         Transaction transaction = TransactionUtils.convertToTransaction(transactionDto, recipient);

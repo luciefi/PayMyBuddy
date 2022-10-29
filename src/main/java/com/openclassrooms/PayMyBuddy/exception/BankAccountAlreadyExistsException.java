@@ -2,6 +2,6 @@ package com.openclassrooms.PayMyBuddy.exception;
 
 public class BankAccountAlreadyExistsException extends AlreadyExistsException {
     public BankAccountAlreadyExistsException() {
-        super("Ce compte existe déjà.");
+        super("\u26a0 Ce compte existe déjà.");
     }
 }

@@ -2,6 +2,6 @@ package com.openclassrooms.PayMyBuddy.exception;
 
 public class InsufficientBalanceException extends Exception {
     public InsufficientBalanceException(){
-        super("Le solde est insuffisant.");
+        super("\u26a0 Le solde est insuffisant.");
     }
 }

@@ -10,15 +10,17 @@
     <div th:insert="headerContact :: header"></div>
     <div th:insert="headerContact :: contactBreadcrumb"></div>
     <div class="container p-5">
+        <div class="alert alert-success alert-dismissible fade show my-1" role="alert" th:unless="${#strings.isEmpty(message)}">
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         <h3 class="h3">Ajout d'un nouveau contact</h3>
         <div class="bg-light p-3 mb-3">
             <form method="post"
                   th:action="@{/contact}" th:object="${emailAddress}">
-
-                <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
-                    <ul>
-                        <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Ce contact existe déjà.</li>
-                    </ul>
+                <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
+                    <span th:text="${err}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <div class="container">
                     <div class="row d-flex align-items-center">
@@ -33,7 +35,9 @@
                             <button type="submit" class="btn btn-info">Ajouter</button>
                         </div>
                     </div>
-                    <span class="col-7 offset-2" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
+                    <div class="col-7 offset-2 p-2">
+                        <small class=" text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></small>
+                    </div>
                 </div>
             </form>
         </div>

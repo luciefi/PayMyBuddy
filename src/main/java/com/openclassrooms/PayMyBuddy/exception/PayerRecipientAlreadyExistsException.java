@@ -2,6 +2,6 @@ package com.openclassrooms.PayMyBuddy.exception;
 
 public class PayerRecipientAlreadyExistsException extends AlreadyExistsException {
     public PayerRecipientAlreadyExistsException() {
-        super("Ce contact existe déjà.");
+        super("\u26a0 Ce contact existe déjà.");
     }
 }

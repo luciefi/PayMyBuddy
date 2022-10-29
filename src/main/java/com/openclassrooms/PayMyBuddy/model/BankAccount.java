@@ -21,12 +21,14 @@ public class BankAccount {
     private User user;
 
     @NotBlank(message = "L''IBAN ne peut pas être vide.")
-    @Size(min = 12, max = 34, message = "L''IBAN doit contenir entre 12 et 34 caractères")
+    @Size(min = 12, max = 34, message = "L''IBAN doit contenir entre 12 et 34 caractères.")
     private String iban;
 
     @NotBlank(message = "Le BIC ne peut pas être vide.")
-    @Size(min = 8, max = 11, message = "Le BIC doit contenir entre 8 and 11 caractères")
+    @Size(min = 8, max = 11, message = "Le BIC doit contenir entre 8 et 11 caractères.")
     private String bic;
+
+    @NotBlank(message = "Le nom ne peut pas être vide.")
     private String name;
 
     @Column(name = "date_of_creation")
@@ -36,5 +38,4 @@ public class BankAccount {
     private Timestamp lastTransactionDate;
 
     private boolean deactivated;
-
 }

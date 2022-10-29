@@ -6,6 +6,7 @@ import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -37,7 +38,6 @@ public class UserService implements IUserService {
 
     @Override
     public void updateBalance(Double amount, TransactionType type) throws InsufficientBalanceException {
-
         if (type.equals(TransactionType.CREDIT_EXTERNAL_ACCOUNT)) {
             debitBalance(amount);
         } else {

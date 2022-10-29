@@ -10,18 +10,22 @@
     <div th:insert="headerTransfer :: header"></div>
     <div th:insert="headerTransfer :: transferBreadcrumb"></div>
     <div class="container p-5">
-        <div class="container">
+        <div class="container my-1">
             <div class="row">
                 <h3 class="col-5 text-start m-0 p-0">Nouveau virement</h3>
                 <a th:href="@{/contact}" class="btn btn-secondary col-2 offset-5">Nouveau contact</a>
             </div>
         </div>
-        <div class="bg-light p-3 mb-3">
+        <div class="alert alert-success alert-dismissible fade show my-2" role="alert" th:unless="${#strings.isEmpty(message)}">
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="bg-light p-3 mb-3 mt-2">
             <form method="post"
                   th:action="@{/transaction}" th:object="${transactionDto}">
-                <div class="alert alert-danger" th:if="${#fields.hasErrors('global')}">
+                <div class="alert alert-danger text-danger pb-0" th:if="${#fields.hasErrors('global')}">
                     <ul>
-                        <li th:each="err : ${#fields.errors('global')}" th:text="${err}"></li>
+                        <li th:each="err : ${#fields.errors('global')}"><small th:text="${err}"></small></li>
                     </ul>
                 </div>
                 <div class="container">
@@ -49,19 +53,18 @@
                         </div>
                     </div>
                     <div class="row d-flex align-items-center">
-                        <div class="col-3 form-group">
-                            <p th:if="${#fields.hasErrors('contactId')}" th:errors="*{contactId}"></p>
+                        <div class="col-3 form-group text-danger">
+                            <small th:if="${#fields.hasErrors('contactId')}" th:errors="*{contactId}"></small>
                         </div>
-                        <div class="col-2 form-group">
-                            <p th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></p>
+                        <div class="col-2 form-group text-danger">
+                            <small th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></small>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-
         <h3 class="h3 col-3 text-start m-0 p-0">Mes virements</h3>
-        <div class="mt-4 border border-dark border-2 text-center">
+        <div class="mt-3 border border-dark border-2 text-center">
             <table class="table table-striped">
                 <thead class="bg-info text-white">
                 <tr>

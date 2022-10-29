@@ -8,8 +8,9 @@
 </head>
 <body>
 <div class="container">
-    <h2 class="h2">Plan du site</h2>
-    <h1>Bank account</h1>
+        <div th:insert="headerHome :: header"></div>
+    <h2>Plan du site</h2>
+    <h4>Bank account</h4>
     <ul>
         <li><a href="http://localhost:8080/bankAccount">Compte bancaire</a></li>
         <li><a href="http://localhost:8080/createBankAccount">Ajouter compte bancaire</a></li>
@@ -17,17 +18,13 @@
         <li><a href="http://localhost:8080/externalTransaction">Transactions externes</a></li>
         <li><a href="http://localhost:8080/newExternalTransaction">Effectuer une transaction externe</a></li>
     </ul>
-    <h1>Contact</h1>
+    <h4>Contact</h4>
     <ul>
         <li><a href="http://localhost:8080/contact">Contacts</a></li>
-        <li><a href="http://localhost:8080/createContact">Ajouter un contact</a></li>
     </ul>
-    <h1>Virement</h1>
+    <h4>Virement</h4>
     <ul>
         <li><a href="http://localhost:8080/transaction">Virement</a></li>
-    </ul>
-    <ul>
-        <li><a href="http://localhost:8080/sitemap">Plan du site</a></li>
     </ul>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

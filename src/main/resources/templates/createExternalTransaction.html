@@ -7,67 +7,75 @@
 </head>
 <body>
 <div class="container">
-
     <div th:insert="headerProfile :: header"></div>
     <div th:insert="headerProfile :: newExternalTransactionBreadcrumb"></div>
     <div class="container p-5">
-        <h2 class="h2">Effectuer un virement vers mon compte bancaire</h2>
-
-        <div th:if="${bankAccounts.empty}" aria-disabled="true">
-            <p>Pour effectuer un virement externe, il faut avoir enregistré un compte bancaire.</p>
-            <a th:href="@{/createBankAccount}" class="btn btn-secondary">Ajouter un compte bancaire</a>
-        </div>
-
-        <div th:unless="${bankAccounts.empty}">
-            <form method="post"
-                  th:action="@{/newExternalTransaction}" th:object="${externalTransactionDto}">
-                <div class="form-group">
-                    <ul th:if="${#fields.hasErrors('global')}">
-                        <li th:each="err : ${#fields.errors('global')}" th:text="${err}">Virement impossible</li>
-                    </ul>
-                    <label class="form-label">Compte bancaire</label>
-                    <select class="form-control" id="bankAccountSelect" th:field="*{bankAccountId}">
-                        <option th:value="0" hidden selected>Choisir un compte</option>
-                        <option th:each="bankAccount : ${bankAccounts}" th:value="${bankAccount.id}" th:text="${bankAccount.name}">
-                            Choisir le compte bancaire
-                        </option>
-                    </select>
-                    <p th:if="${#fields.hasErrors('bankAccountId')}" th:errors="*{bankAccountId}"></p>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Type</label>
-                    <div class="form-check">
-                        <input type="radio" id="versCompteBancaire" name="versCompteBancaire" class="form-check-input" value="0"
-                               th:field="*{transactionType}">
-                        <label class="form-check-label" for="versCompteBancaire">Vers mon compte bancaire</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="radio" id="versComptePMB" name="versComptePMB" class="form-check-input" value="1"
-                               th:field="*{transactionType}">
-                        <label class="form-check-label" for="versComptePMB">Vers mon compte PayMyBuddy</label>
-                    </div>
-                    <span th:if="${#fields.hasErrors('transactionType')}" th:errors="*{transactionType}"></span>
-                </div>
-                <div class="form-group">
-                    <label for="montantInput" class="form-label">Montant</label>
-                    <input
-                            type="number" step="0.01" th:field="*{amount}" class="form-control" id="montantInput"
-                            placeholder="Saisir le montant">
-                    <p th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></p>
-                    <p>Solde actuel : <span th:text="${balance}"></span>€</p>
-                </div>
-                <div class="form-group">
-                    <label for="descriptionInput" class="form-label">Description</label>
-                    <input
-                            type="text" th:field="*{description}" class="form-control" id="descriptionInput"
-                            placeholder="Saisir la description" maxlength="64">
-                    <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+        <h2 class="px-2 m-0">Nouveau virement externe</h2>
+        <div class="container pt-2 px-2">
+            <div class="col-8">
+                <div th:if="${bankAccounts.empty}" aria-disabled="true">
+                    <p>Pour effectuer un virement externe, enregistrez d'abord un compte bancaire.</p>
+                    <a th:href="@{/createBankAccount}" class="btn btn-secondary">Ajouter un compte bancaire</a>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Ajouter</button>
-            </form>
+                <div th:unless="${bankAccounts.empty}">
+                    <form method="post"
+                          th:action="@{/newExternalTransaction}" th:object="${externalTransactionDto}">
+                        <div class="form-group m-3">
+                            <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
+                                <span th:text="${err}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <label class="h6 p-1 form-label">Compte bancaire</label>
+                            <select class="form-control" id="bankAccountSelect" th:field="*{bankAccountId}">
+                                <option th:value="0" hidden selected>Choisir un compte</option>
+                                <option th:each="bankAccount : ${bankAccounts}" th:value="${bankAccount.id}" th:text="${bankAccount.name}">
+                                    Choisir le compte bancaire
+                                </option>
+                            </select>
+                            <small class="text-danger p-1" th:if="${#fields.hasErrors('bankAccountId')}" th:errors="*{bankAccountId}"></small>
+                        </div>
+                        <div class="form-group m-3">
+                            <label class="h6 p-1 form-label">Type</label>
+                            <div class="form-check">
+                                <input type="radio" id="versCompteBancaire" name="versCompteBancaire" class="form-check-input" value="0"
+                                       th:field="*{transactionType}">
+                                <label class="form-check-label" for="versCompteBancaire">Vers mon compte bancaire</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="versComptePMB" name="versComptePMB" class="form-check-input" value="1"
+                                       th:field="*{transactionType}">
+                                <label class="form-check-label" for="versComptePMB">Vers mon compte PayMyBuddy</label>
+                            </div>
+                            <small class="text-danger p-1" th:if="${#fields.hasErrors('transactionType')}" th:errors="*{transactionType}"></small>
+                        </div>
+                        <div class="form-group m-3">
+                            <label for="montantInput" class="h6 p-1 form-label">Montant</label>
+                            <input
+                                    type="number" step="0.01" th:field="*{amount}" class="form-control" id="montantInput"
+                                    placeholder="Saisir le montant">
+                            <small th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}" class="text-danger p-1"></small>
+                            <p class="p-1">Solde actuel : <span th:text="${balance}"></span>€</p>
+                        </div>
+                        <div class="form-group m-3">
+                            <label for="descriptionInput" class="h6 p-1 form-label">Description</label>
+                            <input
+                                    type="text" th:field="*{description}" class="form-control" id="descriptionInput"
+                                    placeholder="Saisir la description" maxlength="64">
+                            <div class="text-danger p-1">
+                                <small th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></small>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="m-3 btn btn-primary">Valider</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 </body>
 </html>

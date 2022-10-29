@@ -14,8 +14,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Collections;
 
 @Controller
 public class ExternalTransactionController {
@@ -28,6 +30,9 @@ public class ExternalTransactionController {
 
     @Autowired
     private UserService userService;
+
+    public static final String NEW_TRANSACTION_SUCCESS_MESSAGE = "Le virement a été effectué !";
+
 
     @GetMapping("/externalTransaction")
     public String externalTransactions(Model model) {
@@ -45,13 +50,14 @@ public class ExternalTransactionController {
     }
 
     @PostMapping("/newExternalTransaction")
-    public String saveNewExternalTransaction(@Valid ExternalTransactionDto externalTransactionDto, BindingResult result, Model model) {
+    public String saveNewExternalTransaction(@Valid ExternalTransactionDto externalTransactionDto, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             addAttributesToModel(model);
             return "createExternalTransaction";
         }
         try {
             service.saveExternalTransaction(externalTransactionDto);
+            redirectAttributes.addFlashAttribute("message", NEW_TRANSACTION_SUCCESS_MESSAGE);
             return "redirect:/externalTransaction";
         } catch (BankAccountNotFoundException | InsufficientBalanceException e) {
             ObjectError error = new ObjectError("globalError", e.getMessage());
