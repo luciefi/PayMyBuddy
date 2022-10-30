@@ -6,8 +6,8 @@ import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -47,6 +47,12 @@ public class UserService implements IUserService {
 
     @Override
     public User saveUser(User user) {
+        Optional<User> sameEmailUser = userRepository.findByEmail(user.getEmail());
+        if(sameEmailUser.isPresent() &&(user.getId() == null || user.getId() != sameEmailUser.get().getId())){
+            throw new EmailAlreadyExistsException();
+        }
+        Calendar calendar = Calendar.getInstance();
+        user.setDateOfCreation(new Timestamp(calendar.getTime().getTime()));
         return userRepository.save(user);
     }
 
@@ -67,6 +73,11 @@ public class UserService implements IUserService {
         Double balance = user.getBalance();
         user.setBalance(balance + amount);
         userRepository.save(user);
+    }
+
+    @Override
+    public User getCurrentUser(){
+        return getUser(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
     }
 
 }

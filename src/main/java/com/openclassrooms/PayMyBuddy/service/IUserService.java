@@ -22,4 +22,6 @@ public interface IUserService {
     void debitBalance(double v) throws InsufficientBalanceException;
 
     void creditBalance(Double amount, Long recipientId) throws InsufficientBalanceException;
+
+    User getCurrentUser();
 }
