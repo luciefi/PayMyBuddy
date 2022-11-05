@@ -30,60 +30,53 @@ public class BankAccountController {
 
     @GetMapping("/bankAccount")
     public String bankAccounts(Model model) {
-        Iterable<BankAccount> bankAccounts = service.getAllForCurrentUser();
-        model.addAttribute("bankAccounts", bankAccounts);
-        for(BankAccount bankAccount : bankAccounts){
-            model.addAttribute("bankAccount"+bankAccount.getId(), bankAccount);
-        }
-        BankAccount newBankAccount = new BankAccount();
-        model.addAttribute("newBankAccount", newBankAccount);
+        addAttributesToModel(model);
         return "bankAccount";
     }
 
-    @GetMapping("/createBankAccount")
-    public String createBankAccount(Model model) {
-        BankAccount bankAccount = new BankAccount();
-        model.addAttribute("bankAccount", bankAccount);
-        return "createBankAccount";
-    }
-
-    @GetMapping("/updateBankAccount/{id}")
-    public String updateBankAccount(@PathVariable("id") final Long id, Model model) {
-        BankAccount bankAccount = service.getById(id);
-        model.addAttribute("bankAccount", bankAccount);
-        return "updateBankAccount";
-    }
-
     @PostMapping("/updateBankAccount/{id}")
-    public String saveBankAccount(@Valid BankAccount bankAccount, BindingResult result,
+    public String saveBankAccount(@Valid BankAccount bankAccountToUpdate, BindingResult result, Model model,
                                   RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "updateBankAccount";
+            addAttributesToModel(model);
+            return "bankAccount";
         }
         try {
-            service.saveBankAccount(bankAccount);
+            service.saveBankAccount(bankAccountToUpdate);
             redirectAttributes.addFlashAttribute("message", BANK_ACCOUNT_UPDATED_SUCCESS_MESSAGE);
             return "redirect:/bankAccount";
         } catch (BankAccountAlreadyExistsException e) {
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
-            return "updateBankAccount";
+            addAttributesToModel(model);
+            return "bankAccount";
         }
     }
 
     @PostMapping("/createBankAccount")
-    public String saveNewBankAccount(@Valid BankAccount bankAccount, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String saveNewBankAccount(@Valid BankAccount bankAccount, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if (result.hasErrors()) {
-            return "createBankAccount";
+            Iterable<BankAccount> bankAccounts = service.getAllForCurrentUser();
+            model.addAttribute("bankAccounts", bankAccounts);
+            for (BankAccount bankAccountItem : bankAccounts) {
+                model.addAttribute("bankAccount" + bankAccountItem.getId(), bankAccountItem);
+            }
+            return "bankAccount";
         }
         try {
             service.saveBankAccount(bankAccount);
             redirectAttributes.addFlashAttribute("message", NEW_BANK_ACCOUNT_SUCCESS_MESSAGE);
+
             return "redirect:/bankAccount";
         } catch (BankAccountAlreadyExistsException e) {
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
-            return "createBankAccount";
+            Iterable<BankAccount> bankAccounts = service.getAllForCurrentUser();
+            model.addAttribute("bankAccounts", bankAccounts);
+            for (BankAccount bankAccountItem : bankAccounts) {
+                model.addAttribute("bankAccount" + bankAccountItem.getId(), bankAccountItem);
+            }
+            return "bankAccount";
         }
     }
 
@@ -101,4 +94,13 @@ public class BankAccountController {
         return new ModelAndView("redirect:/bankAccount");
     }
 
+    private void addAttributesToModel(Model model) {
+        Iterable<BankAccount> bankAccounts = service.getAllForCurrentUser();
+        model.addAttribute("bankAccounts", bankAccounts);
+        for (BankAccount bankAccount : bankAccounts) {
+            model.addAttribute("bankAccount" + bankAccount.getId(), bankAccount);
+        }
+        BankAccount bankAccount = new BankAccount();
+        model.addAttribute("bankAccount", bankAccount);
+    }
 }

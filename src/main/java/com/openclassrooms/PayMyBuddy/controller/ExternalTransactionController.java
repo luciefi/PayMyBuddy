@@ -36,24 +36,18 @@ public class ExternalTransactionController {
 
     @GetMapping("/externalTransaction")
     public String externalTransactions(Model model) {
-        Iterable<ExternalTransactionDto> externalTransactions = service.getAllDto();
-        model.addAttribute("externalTransactions", externalTransactions);
+        addAttributesToModel(model);
+        ExternalTransactionDto externalTransactionDto = new ExternalTransactionDto();
+        model.addAttribute("externalTransactionDto", externalTransactionDto);
         return "externalTransactions";
     }
 
-    @GetMapping("/newExternalTransaction")
-    public String createExternalTransaction(Model model) {
-        ExternalTransactionDto externalTransactionDto = new ExternalTransactionDto();
-        model.addAttribute("externalTransactionDto", externalTransactionDto);
-        addAttributesToModel(model);
-        return "createExternalTransaction";
-    }
-
     @PostMapping("/newExternalTransaction")
-    public String saveNewExternalTransaction(@Valid ExternalTransactionDto externalTransactionDto, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+    public String saveNewExternalTransaction(@Valid ExternalTransactionDto externalTransactionDto, BindingResult result, Model model,
+                                             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             addAttributesToModel(model);
-            return "createExternalTransaction";
+            return "externalTransactions";
         }
         try {
             service.saveExternalTransaction(externalTransactionDto);
@@ -63,7 +57,7 @@ public class ExternalTransactionController {
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
             addAttributesToModel(model);
-            return "createExternalTransaction";
+            return "externalTransactions";
         }
     }
 
@@ -72,5 +66,7 @@ public class ExternalTransactionController {
         model.addAttribute("bankAccounts", bankAccounts);
         double balance = userService.getBalance();
         model.addAttribute("balance", balance);
+        Iterable<ExternalTransactionDto> externalTransactions = service.getAllDto();
+        model.addAttribute("externalTransactions", externalTransactions);
     }
 }

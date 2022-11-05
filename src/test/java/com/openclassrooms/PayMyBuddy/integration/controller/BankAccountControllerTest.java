@@ -42,15 +42,6 @@ public class BankAccountControllerTest {
     }
 
     @Test
-    public void createBankAccountTest() throws Exception {
-        mockMvc.perform(get("/createBankAccount"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(view().name("createBankAccount"))
-                .andExpect(content().string(containsString("Ajout")));
-    }
-
-    @Test
     public void createBankAccountPostTest() throws Exception {
         mockMvc.perform(post("/createBankAccount")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -70,7 +61,7 @@ public class BankAccountControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createBankAccount"));
+                .andExpect(view().name("bankAccount"));
         verify(bankAccountService, Mockito.times(0)).saveBankAccount(any(BankAccount.class));
     }
 
@@ -83,24 +74,13 @@ public class BankAccountControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createBankAccount"));
+                .andExpect(view().name("bankAccount"));
         verify(bankAccountService, Mockito.times(1)).saveBankAccount(any(BankAccount.class));
     }
 
     @Test
-    public void updateBankAccountTest() throws Exception {
-        when(bankAccountService.getById(any(Long.class))).thenReturn(new BankAccount());
-        mockMvc.perform(get("/updateBankAccount/1"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(view().name("updateBankAccount"))
-                .andExpect(content().string(containsString("Modifier")));
-        verify(bankAccountService, Mockito.times(1)).getById(any(Long.class));
-    }
-
-    @Test
     public void updateBankAccountPostTest() throws Exception {
-        mockMvc.perform(post("/updateBankAccount")
+        mockMvc.perform(post("/updateBankAccount/1")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("name=compte&iban=2123456677899000&bic=12390003")
                 )
@@ -112,26 +92,26 @@ public class BankAccountControllerTest {
 
     @Test
     public void updateBankAccountPostFormErrorTest() throws Exception {
-        mockMvc.perform(post("/updateBankAccount")
+        mockMvc.perform(post("/updateBankAccount/1")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("name=&iban=&bic=")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("updateBankAccount"));
+                .andExpect(view().name("bankAccount"));
         verify(bankAccountService, Mockito.times(0)).saveBankAccount(any(BankAccount.class));
     }
 
     @Test
     public void updateBankAccountPostAlreadyExistsTest() throws Exception {
         when(bankAccountService.saveBankAccount(any(BankAccount.class))).thenThrow(new BankAccountAlreadyExistsException());
-        mockMvc.perform(post("/updateBankAccount")
+        mockMvc.perform(post("/updateBankAccount/1")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("name=compte&iban=2123456677899000&bic=12390003")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("updateBankAccount"));
+                .andExpect(view().name("bankAccount"));
         verify(bankAccountService, Mockito.times(1)).saveBankAccount(any(BankAccount.class));
     }
 

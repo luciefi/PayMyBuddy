@@ -6,21 +6,28 @@
     <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 <div class="container">
-
     <div th:insert="headerProfile :: header"></div>
     <div th:insert="headerProfile :: externalTransactionsBreadcrumb"></div>
-
     <div class="container p-5">
         <div class="container">
             <div class="row">
                 <h2 class="h2 col-8 text-start m-0 p-0">Mes virements vers mon compte bancaire</h2>
-                <a th:href="@{/newExternalTransaction}" class="btn btn-secondary col-3 offset-1">Nouveau virement
-                    externe</a>
+                <button class="btn btn-secondary col-3 offset-1" data-bs-toggle="modal"
+                        th:attr="data-bs-target=${'#addModal'}">Nouveau virement externe
+                </button>
+                <a th:href="@{/newExternalTransaction}"></a>
             </div>
         </div>
         <div class="alert alert-success alert-dismissible fade show my-1" role="alert" th:unless="${#strings.isEmpty(message)}">
             <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
+            <span th:text="${err}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <div class="mt-4 border border-dark border-2 text-center">
@@ -46,6 +53,79 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal d'ajout-->
+<div class="modal fade" th:attr="id=${'addModal'}, data-show=${true}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Faire un virement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post"
+                  th:action="@{/newExternalTransaction}" th:object="${__${'externalTransaction'+'Dto'}__}">
+                <div class="modal-body">
+                    <div class="form-group m-3">
+                        <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
+                            <span th:text="${err}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <label class="h6 p-1 form-label">Compte bancaire</label>
+                        <select class="form-control" id="bankAccountSelect" th:field="*{bankAccountId}">
+                            <option th:value="0" hidden selected>Choisir un compte</option>
+                            <option th:each="bankAccount : ${bankAccounts}" th:value="${bankAccount.id}" th:text="${bankAccount.name}">
+                                Choisir le compte bancaire
+                            </option>
+                        </select>
+                        <small class="text-danger p-1" th:if="${#fields.hasErrors('bankAccountId')}" th:errors="*{bankAccountId}"></small>
+                    </div>
+                    <div class="form-group m-3">
+                        <label class="h6 p-1 form-label">Type</label>
+                        <div class="form-check">
+                            <input type="radio" id="versCompteBancaire" name="versCompteBancaire" class="form-check-input" value="0"
+                                   th:field="*{transactionType}">
+                            <label class="form-check-label" for="versCompteBancaire">Vers mon compte bancaire</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" id="versComptePMB" name="versComptePMB" class="form-check-input" value="1"
+                                   th:field="*{transactionType}">
+                            <label class="form-check-label" for="versComptePMB">Vers mon compte PayMyBuddy</label>
+                        </div>
+                        <small class="text-danger p-1" th:if="${#fields.hasErrors('transactionType')}" th:errors="*{transactionType}"></small>
+                    </div>
+                    <div class="form-group m-3">
+                        <label for="montantInput" class="h6 p-1 form-label">Montant</label>
+                        <input
+                                type="number" step="0.01" min="0.01" th:field="*{amount}" class="form-control" id="montantInput"
+                                placeholder="Saisir le montant">
+                        <small th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}" class="text-danger p-1"></small>
+                        <p class="p-1">Solde actuel : <span th:text="${balance}"></span>€</p>
+                    </div>
+                    <div class="form-group m-3">
+                        <label for="descriptionInput" class="h6 p-1 form-label">Description</label>
+                        <input
+                                type="text" th:field="*{description}" class="form-control" id="descriptionInput"
+                                placeholder="Saisir la description" maxlength="64">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-info">Valider</button>
+
+                    <script th:inline="javascript" th:if="${#fields.hasAnyErrors()}">
+                        var myModal = new bootstrap.Modal(document.getElementById('addModal'), {
+                            keyboard: false
+                        })
+                        myModal.show();
+                    </script>
+                </div>
+            </form>
         </div>
     </div>
 </div>

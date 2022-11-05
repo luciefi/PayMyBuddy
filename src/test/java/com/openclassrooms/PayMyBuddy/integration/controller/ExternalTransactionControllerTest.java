@@ -53,17 +53,6 @@ class ExternalTransactionControllerTest {
     }
 
     @Test
-    void createExternalTransaction() throws Exception {
-        mockMvc.perform(get("/newExternalTransaction"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(view().name("createExternalTransaction"))
-                .andExpect(content().string(containsString("Effectuer un virement vers mon compte bancaire")));
-        verify(userService, times(1)).getBalance();
-        verify(bankAccountService, times(1)).getAllActiveForCurrentUser();
-    }
-
-    @Test
     void saveNewExternalTransaction() throws Exception {
         mockMvc.perform(post("/newExternalTransaction")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -88,7 +77,7 @@ class ExternalTransactionControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createExternalTransaction"));
+                .andExpect(view().name("externalTransactions"));
         verify(service, Mockito.never()).saveExternalTransaction(any(ExternalTransactionDto.class));
         verify(userService, times(1)).getBalance();
         verify(bankAccountService, times(1)).getAllActiveForCurrentUser();
@@ -107,7 +96,7 @@ class ExternalTransactionControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createExternalTransaction"))
+                .andExpect(view().name("externalTransactions"))
                 .andExpect(content().string(containsString("Compte bancaire introuvable.")));
         verify(service, Mockito.times(1)).saveExternalTransaction(any(ExternalTransactionDto.class));
         verify(userService, times(1)).getBalance();
@@ -126,7 +115,7 @@ class ExternalTransactionControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("createExternalTransaction"))
+                .andExpect(view().name("externalTransactions"))
                 .andExpect(content().string(containsString("Le solde est insuffisant.")));
         verify(service, Mockito.times(1)).saveExternalTransaction(any(ExternalTransactionDto.class));
         verify(userService, times(1)).getBalance();
