@@ -10,84 +10,116 @@
     <div th:insert="headerProfile :: header"></div>
     <div th:insert="headerProfile :: profileBreadcrumb"></div>
     <div class="container p-4">
-        <div class="col-8 offset-2">
-            <div class="container">
-                <div class="row">
-                    <h2 class="h2 col-5 text-start p-0 m-0">Mon profil</h2>
-                    <div class="col-5 offset-2 text-end">
-                        <a th:href="@{/bankAccount}" class="btn btn-secondary">Mes comptes bancaires</a>
-                    </div>
-                </div>
+        <div class="row">
+            <div class="col-2 offset-1">
+                <a th:href="@{/bankAccount}" class="btn btn-secondary my-2">Mes comptes bancaires</a>
+                <a th:href="@{/bankAccount}" class="btn btn-secondary my-2">Voir mes contacts</a>
+                <a href="#updatePassword" class="btn btn-info text-white my-2">Modifier mon mot de passe</a>
             </div>
-            <form method="post"
-                  th:action="@{/profile}" th:object="${user}">
-
-                <div class="form-group my-3">
-                    <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
-                        <span th:text="${err}"></span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <label for="firstNameInput" class="form-label h6 p-1">Prénom</label>
-                    <input
-                            type="text" th:field="*{firstName}" class="form-control" id="firstNameInput"
-                            placeholder="Saisir votre prénom" maxlength="64">
-                    <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></small>
-                    </div>
+            <div class="col-6 offset-1">
+                <div class="alert alert-success alert-dismissible fade show my-1" role="alert" th:unless="${#strings.isEmpty(message)}">
+                    <span th:text="${message}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+                <h2>Mon profil</h2>
+                <form method="post"
+                      th:action="@{/profile}" th:object="${userDto}">
 
-                <div class="form-group my-3">
-                    <label for="lastNameInput" class="form-label h6 p-1">Nom</label>
-                    <input
-                            type="text" th:field="*{lastName}" class="form-control" id="lastNameInput"
-                            placeholder="Saisir votre nom" maxlength="64">
-                    <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></small>
+                    <div class="form-group my-3">
+                        <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
+                            <span th:text="${err}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <label for="firstNameInput" class="form-label h6 p-1">Prénom</label>
+                        <input
+                                type="text" th:field="*{firstName}" class="form-control" id="firstNameInput"
+                                placeholder="Saisir votre prénom" maxlength="64">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></small>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group my-3">
-                    <label for="emailInput" class="form-label h6 p-1">Email</label>
-                    <input
-                            type="email" th:field="*{email}" class="form-control" id="emailInput"
-                            aria-describedby="emailHelp" placeholder="Saisir votre email" maxlength="255">
-                    <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                    <div class="form-group my-3">
+                        <label for="lastNameInput" class="form-label h6 p-1">Nom</label>
+                        <input
+                                type="text" th:field="*{lastName}" class="form-control" id="lastNameInput"
+                                placeholder="Saisir votre nom" maxlength="64">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></small>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group my-3">
-                    <label for="passwordInput" class="form-label h6 p-1">Mot de passe</label>
-                    <input
-                            type="password" th:field="*{password}" class="form-control" id="passwordInput"
-                            placeholder="Saisir votre mot de passe" maxlength="64" minlength="8">
-                    <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                    <div class="form-group my-3">
+                        <label for="emailInput" class="form-label h6 p-1">Email</label>
+                        <input
+                                type="email" th:field="*{email}" class="form-control" id="emailInput"
+                                aria-describedby="emailHelp" placeholder="Saisir votre email" maxlength="255">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group my-3">
-                    <label for="phoneInput" class="form-label h6 p-1">Téléphone</label>
-                    <input
-                            type="tel" th:field="*{phone}" class="form-control" id="phoneInput"
-                            placeholder="Saisir votre numéro de téléphone" maxlength="20">
-                    <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+                    <div class="form-group my-3">
+                        <label for="phoneInput" class="form-label h6 p-1">Téléphone</label>
+                        <input
+                                type="tel" th:field="*{phone}" class="form-control" id="phoneInput"
+                                placeholder="Saisir votre numéro de téléphone" maxlength="20">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group my-3">
-                    <label for="addressInput" class="form-label h6 p-1">Adresse</label>
-                    <input
-                            type="text" th:field="*{address}" class="form-control" id="addressInput"
-                            placeholder="Saisir votre adresse" maxlength="255">
-                    <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></small>
+                    <div class="form-group my-3">
+                        <label for="addressInput" class="form-label h6 p-1">Adresse</label>
+                        <input
+                                type="text" th:field="*{address}" class="form-control" id="addressInput"
+                                placeholder="Saisir votre adresse" maxlength="255">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></small>
+                        </div>
                     </div>
-                </div>
+                    <button type="submit" class="my-3 btn btn-primary">Modifier</button>
+                </form>
 
-                <button type="submit" class="my-3 btn btn-primary">Enregistrer</button>
-            </form>
+                <h4 class="mt-5" id="updatePassword">Changer de mot de passe</h4>
+                <form method="post"
+                      th:action="@{/password}" th:object="${passwordUpdateDto}">
+                    <div class="form-group my-3">
+                        <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
+                            <span th:text="${err}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <label for="oldPasswordInput" class="form-label h6 p-1">Actuel</label>
+                        <input
+                                type="password" th:field="*{oldPassword}" class="form-control" id="oldPasswordInput"
+                                placeholder="Saisir votre mot de passe actuel" maxlength="64" minlength="8">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-group my-3">
+                        <label for="passwordInput" class="form-label h6 p-1">Nouveau</label>
+                        <input
+                                type="password" th:field="*{password}" class="form-control" id="passwordInput"
+                                placeholder="Saisir votre nouveau mot de passe" maxlength="64" minlength="8">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                        </div>
+                    </div>
+                    <div class="form-group my-3">
+                        <label for="passwordConfirmationInput" class="form-label h6 p-1">Confirmation</label>
+                        <input
+                                type="password" th:field="*{passwordConfirmation}" class="form-control" id="passwordConfirmationInput"
+                                placeholder="Confirmer votre nouveau mot de passe" maxlength="64" minlength="8">
+                        <div class="text-danger p-1">
+                            <small th:if="${#fields.hasErrors('passwordConfirmation')}" th:errors="*{passwordConfirmation}"></small>
+                        </div>
+                    </div>
+                    <button type="submit" class="my-3 btn btn-primary">Modifier</button>
+                </form>
+            </div>
+
         </div>
     </div>
 </div>

@@ -7,6 +7,7 @@ import com.openclassrooms.PayMyBuddy.exception.PayerRecipientAlreadyExistsExcept
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
 import com.openclassrooms.PayMyBuddy.model.ContactDto;
 import com.openclassrooms.PayMyBuddy.model.EmailAddress;
+import com.openclassrooms.PayMyBuddy.model.UserDto;
 import com.openclassrooms.PayMyBuddy.service.ContactService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,6 +67,7 @@ class ContactControllerTest {
 
     @Test
     void createNewContactHasError() throws Exception {
+        when(contactService.getContacts()).thenReturn(Collections.EMPTY_LIST);
         mockMvc.perform(post("/contact")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("emailAddress=")

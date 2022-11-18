@@ -20,13 +20,13 @@ public class BankAccountController {
     @Autowired
     private BankAccountService service;
 
-    public static final String NEW_BANK_ACCOUNT_SUCCESS_MESSAGE = "\u2714 Le compte bancaire a été ajouté !";
+    public static final String NEW_BANK_ACCOUNT_SUCCESS_MESSAGE = "\u2714 \u2007 Le compte bancaire a été ajouté !";
 
-    public static final String BANK_ACCOUNT_UPDATED_SUCCESS_MESSAGE = "\u2714 Le compte bancaire a été modifié.";
+    public static final String BANK_ACCOUNT_UPDATED_SUCCESS_MESSAGE = "\u2714 \u2007 Le compte bancaire a été modifié.";
 
-    public static final String BANK_ACCOUNT_DEACTIVATED_SUCCESS_MESSAGE = "\u2714 Le compte bancaire a été désactivé.";
+    public static final String BANK_ACCOUNT_DEACTIVATED_SUCCESS_MESSAGE = "\u2714 \u2007 Le compte bancaire a été désactivé.";
 
-    private static final String BANK_ACCOUNT_ACTIVATED_SUCCESS_MESSAGE = "\u2714 Le compte bancaire a été activé.";
+    private static final String BANK_ACCOUNT_ACTIVATED_SUCCESS_MESSAGE = "\u2714 \u2007 Le compte bancaire a été activé.";
 
     @GetMapping("/bankAccount")
     public String bankAccounts(Model model) {

@@ -22,8 +22,8 @@ import javax.validation.Valid;
 @Controller
 public class ContactController {
 
-    public static final String DELETE_CONTACT_SUCCESS_MESSAGE = "\u2714 Le contact a été supprimé !";
-    public static final String ADD_CONTACT_SUCCESS_MESSAGE = "\u2714 Le contact a été ajouté !";
+    public static final String DELETE_CONTACT_SUCCESS_MESSAGE = "\u2714 \u2007 Le contact a été supprimé !";
+    public static final String ADD_CONTACT_SUCCESS_MESSAGE = "\u2714 \u2007 Le contact a été ajouté !";
     @Autowired
     private IContactService service;
 

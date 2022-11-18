@@ -1,8 +1,7 @@
 package com.openclassrooms.PayMyBuddy.service;
 
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
-import com.openclassrooms.PayMyBuddy.model.TransactionType;
-import com.openclassrooms.PayMyBuddy.model.User;
+import com.openclassrooms.PayMyBuddy.model.*;
 
 import java.util.Optional;
 
@@ -17,11 +16,17 @@ public interface IUserService {
 
     void updateBalance(Double amount, TransactionType type) throws InsufficientBalanceException;
 
-    User saveUser(User user);
+    User saveNewUser(ProfileDto profileDto);
+
+    User updateUser(UserDto userDto);
 
     void debitBalance(double v) throws InsufficientBalanceException;
 
     void creditBalance(Double amount, Long recipientId) throws InsufficientBalanceException;
 
-    User getCurrentUser();
+    UserDto getCurrentUserDto();
+
+    void logUserIn(LoginDto loginDto);
+
+    void updatePassword(PasswordUpdateDto passwordUpdateDto);
 }

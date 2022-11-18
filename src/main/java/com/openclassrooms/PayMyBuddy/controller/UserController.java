@@ -1,12 +1,11 @@
 package com.openclassrooms.PayMyBuddy.controller;
 
-import com.openclassrooms.PayMyBuddy.exception.AlreadyExistsException;
-import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.EmailAlreadyExistsException;
-import com.openclassrooms.PayMyBuddy.model.BankAccount;
-import com.openclassrooms.PayMyBuddy.model.User;
-import com.openclassrooms.PayMyBuddy.service.BankAccountService;
-import com.openclassrooms.PayMyBuddy.service.UserService;
+import com.openclassrooms.PayMyBuddy.exception.IncorrectCurrentPasswordException;
+import com.openclassrooms.PayMyBuddy.exception.PasswordAndConfirmationNotIdenticalException;
+import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
+import com.openclassrooms.PayMyBuddy.model.*;
+import com.openclassrooms.PayMyBuddy.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,28 +21,29 @@ import javax.validation.Valid;
 public class UserController {
 
     @Autowired
-    private UserService service;
+    private IUserService service;
 
-    public static final String NEW_PROFILE_SUCCESS_MESSAGE = "\u2714 Votre profil a été crée !";
-    public static final String UPDATE_PROFILE_SUCCESS_MESSAGE = "\u2714 Votre profil a été mis à jour !";
+    public static final String NEW_PROFILE_SUCCESS_MESSAGE = "\u2714 \u2007 Votre profil a été crée !";
+    public static final String UPDATE_PROFILE_SUCCESS_MESSAGE = "\u2714 \u2007 Votre profil a été mis à jour !";
+    public static final String UPDATE_PASSWORD_SUCCESS_MESSAGE = "\u2714 \u2007 Votre mot de passe a été mis à jour !";
 
     @GetMapping("/createProfile")
     public String createProfile(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
+        ProfileDto profileDto = new ProfileDto();
+        model.addAttribute("profileDto", profileDto);
         return "createProfile";
     }
 
     @PostMapping("/createProfile")
-    public String saveNewProfile(@Valid User user, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String saveNewProfile(@Valid ProfileDto profileDto, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "createProfile";
         }
         try {
-            service.saveUser(user);
+            service.saveNewUser(profileDto);
             redirectAttributes.addFlashAttribute("message", NEW_PROFILE_SUCCESS_MESSAGE);
-            return "redirect:/"; // TODO où rediriger + affichage du message
-        } catch (EmailAlreadyExistsException e) { // TODO
+            return "redirect:/";
+        } catch (EmailAlreadyExistsException | PasswordAndConfirmationNotIdenticalException e) {
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
             return "createProfile";
@@ -52,21 +52,42 @@ public class UserController {
 
     @GetMapping("/profile")
     public String viewProfile(Model model) {
-        User user = service.getCurrentUser();
-        model.addAttribute("user", user);
+        model.addAttribute("userDto", service.getCurrentUserDto());
+        model.addAttribute("passwordUpdateDto", new PasswordUpdateDto());
         return "profile";
     }
 
     @PostMapping("/profile")
-    public String updateProfile(@Valid User user, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String updateProfile(@Valid UserDto userDto, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("passwordUpdateDto", new PasswordUpdateDto());
             return "profile";
         }
         try {
-            service.saveUser(user);
+            service.updateUser(userDto);
             redirectAttributes.addFlashAttribute("message", UPDATE_PROFILE_SUCCESS_MESSAGE);
             return "redirect:/profile";
-        } catch (EmailAlreadyExistsException e) { // TODO
+        } catch (EmailAlreadyExistsException | UserNotFoundException e) {
+            ObjectError error = new ObjectError("globalError", e.getMessage());
+            result.addError(error);
+            model.addAttribute("passwordUpdateDto", new PasswordUpdateDto());
+            return "profile";
+        }
+    }
+
+    @PostMapping("/password")
+    public String updatePassword(@Valid PasswordUpdateDto passwordUpdateDto, BindingResult result, RedirectAttributes redirectAttributes,
+                                 Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("userDto", service.getCurrentUserDto());
+            return "profile";
+        }
+        try {
+            service.updatePassword(passwordUpdateDto);
+            redirectAttributes.addFlashAttribute("message", UPDATE_PASSWORD_SUCCESS_MESSAGE);
+            return "redirect:/profile";
+        } catch (PasswordAndConfirmationNotIdenticalException | UserNotFoundException | IncorrectCurrentPasswordException e) {
+            model.addAttribute("userDto", service.getCurrentUserDto());
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
             return "profile";

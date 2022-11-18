@@ -10,6 +10,10 @@
 <div class="container">
     <div th:insert="headerHome :: header"></div>
     <h2 class="my-4">Bienvenue sur PayMyBuddy !</h2>
+    <div class="alert alert-success alert-dismissible fade show my-1" role="alert" th:unless="${#strings.isEmpty(message)}">
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <div class="container m-3">
         <div class="row">
             <div class="card col-4 m-2" style="width: 18rem;">
@@ -48,7 +52,7 @@
             </div>
             <div class="card col-4 m-2" style="width: 18rem;">
                 <div class="card-body">
-                    <a class="h5 card-title text-decoration-none" href="/">Mon profil</a>
+                    <a class="h5 card-title text-decoration-none" href="/profile">Mon profil</a>
                     <p class="card-text">Voir mon profil et le modifier</p>
                 </div>
             </div>

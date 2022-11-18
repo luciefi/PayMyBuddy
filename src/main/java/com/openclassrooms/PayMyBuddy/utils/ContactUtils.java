@@ -5,6 +5,7 @@ import com.openclassrooms.PayMyBuddy.model.PayerRecipient;
 import com.openclassrooms.PayMyBuddy.model.User;
 
 public class ContactUtils {
+    private ContactUtils(){}
     public static ContactDto convertToContactDto(User user, PayerRecipient payerRecipient){
         ContactDto contactDto = new ContactDto();
         contactDto.setDateOfCreation(payerRecipient.getDateOfCreation());

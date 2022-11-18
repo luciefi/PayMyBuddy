@@ -10,25 +10,13 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Data
-@Entity
-@Table(name = "user")
-public class User {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+public class UserDto {
+
     private Long id;
 
     @NotBlank(message = "L''email ne peut pas être vide.")
     @Pattern(regexp = EmailAddress.EMAIL_ADDRESS_PATTERN, message = EmailAddress.EMAIL_INVALID_MESSAGE)
     private String email;
-
-    @NotBlank(message = "Le mot de passe ne peut pas être vide.")
-    private String password;
-
-    @Column(name = "date_of_creation")
-    private Timestamp dateOfCreation;
-
-    @Column(name = "last_online_time")
-    private Timestamp lastOnlineTime;
 
     private double balance ;
 
@@ -45,5 +33,4 @@ public class User {
 
     @NotBlank(message = "Le téléphone ne peut pas être vide.")
     private String phone;
-
 }

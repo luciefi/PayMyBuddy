@@ -79,7 +79,6 @@ class BankAccountServiceTest {
 
         // ACT - ASSERT
         bankAccountService.saveBankAccount(ba);
-        //TODO mock current user utils ??
         verify(userRepository, times(1)).findById(USER_ID_1);
         verify(bankAccountRepository, times(1)).save(any(BankAccount.class));
         verify(bankAccountRepository, times(1)).findByIbanAndBicAndUserIdAndIdNot(any(),
@@ -101,7 +100,6 @@ class BankAccountServiceTest {
         // ACT - ASSERT
         assertThrows(BankAccountAlreadyExistsException.class,
                 () -> bankAccountService.saveBankAccount(ba));
-        //TODO mock current user utils ??
         verify(userRepository, times(0)).findById(USER_ID_1);
         verify(bankAccountRepository, times(0)).save(any(BankAccount.class));
     }
@@ -115,7 +113,6 @@ class BankAccountServiceTest {
         // ACT - ASSERT
         bankAccountService.saveBankAccount(ba);
 
-        //TODO mock current user utils ??
         verify(userRepository, times(1)).findById(USER_ID_1);
         verify(bankAccountRepository, times(1)).findByIbanAndBicAndUserId(any(),
                 any(), any(Long.class));

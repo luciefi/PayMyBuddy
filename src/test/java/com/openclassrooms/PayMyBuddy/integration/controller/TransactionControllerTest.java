@@ -2,6 +2,7 @@ package com.openclassrooms.PayMyBuddy.integration.controller;
 
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
 import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
+import com.openclassrooms.PayMyBuddy.model.ContactDto;
 import com.openclassrooms.PayMyBuddy.model.TransactionDto;
 import com.openclassrooms.PayMyBuddy.service.*;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,12 @@ class TransactionControllerTest {
 
     @Test
     void transactions() throws Exception {
-        mockMvc.perform(get("/transaction")).andDo(print()).andExpect(status().isOk()).andExpect(view().name("transactions")).andExpect(content().string(containsString("Nouveau virement"))).andExpect(content().string(containsString("Mes virements")));
+        mockMvc.perform(get("/transaction"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("transactions"))
+                .andExpect(content().string(containsString("Ajouter un contact")))
+                .andExpect(content().string(containsString("Mes virements")));
         verify(service, times(1)).getAll();
         verify(contactService, times(1)).getContacts();
     }
@@ -49,7 +55,7 @@ class TransactionControllerTest {
 
     @Test
     void saveNewTransaction() throws Exception {
-        when(contactService.getContacts()).thenReturn(Collections.emptyList());
+        when(contactService.getContacts()).thenReturn(Collections.singletonList(new ContactDto()));
         when(service.getAll()).thenReturn(Collections.emptyList());
         mockMvc.perform(post("/transaction").contentType(MediaType.APPLICATION_FORM_URLENCODED).content("accountId=3&amount=2&description=test")).andDo(print()).andExpect(status().isFound()).andExpect(view().name("redirect:/transaction"));
         verify(service, Mockito.never()).getAll();
@@ -59,7 +65,7 @@ class TransactionControllerTest {
 
     @Test
     void saveNewTransactionFormError() throws Exception {
-        when(contactService.getContacts()).thenReturn(Collections.emptyList());
+        when(contactService.getContacts()).thenReturn(Collections.singletonList(new ContactDto()));
         when(service.getAll()).thenReturn(Collections.emptyList());
         mockMvc.perform(post("/transaction").contentType(MediaType.APPLICATION_FORM_URLENCODED).content("contactId=&amount=&description=test")).andDo(print()).andExpect(status().isOk()).andExpect(view().name("transactions"));
         verify(service, Mockito.times(1)).getAll();
@@ -70,7 +76,7 @@ class TransactionControllerTest {
     @Test
     void saveNewTransactionUserNotFoundException() throws Exception {
         doThrow(new UserNotFoundException()).when(service).saveTransaction(any(TransactionDto.class));
-        when(contactService.getContacts()).thenReturn(Collections.emptyList());
+        when(contactService.getContacts()).thenReturn(Collections.singletonList(new ContactDto()));
         when(service.getAll()).thenReturn(Collections.emptyList());
         mockMvc.perform(post("/transaction").contentType(MediaType.APPLICATION_FORM_URLENCODED).content("accountId=3&amount=2&description=test")).andDo(print()).andExpect(status().isOk()).andExpect(view().name("transactions")).andExpect(content().string(containsString("L&#39;utilisateur n&#39;a pas pu être trouvé")));
         verify(service, Mockito.times(1)).getAll();
@@ -81,7 +87,7 @@ class TransactionControllerTest {
     @Test
     void saveNewTransactionInsufficientBalanceException() throws Exception {
         doThrow(new InsufficientBalanceException()).when(service).saveTransaction(any(TransactionDto.class));
-        when(contactService.getContacts()).thenReturn(Collections.emptyList());
+        when(contactService.getContacts()).thenReturn(Collections.singletonList(new ContactDto()));
         when(service.getAll()).thenReturn(Collections.emptyList());
         mockMvc.perform(post("/transaction").contentType(MediaType.APPLICATION_FORM_URLENCODED).content("accountId=3&amount=2&description=test")).andDo(print()).andExpect(status().isOk()).andExpect(view().name("transactions")).andExpect(content().string(containsString("Le solde est insuffisant.")));
         verify(service, Mockito.times(1)).getAll();

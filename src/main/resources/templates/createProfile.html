@@ -13,7 +13,7 @@
         <div class="col-8 offset-2">
             <h2 class="px-2 m-0">Créer mon profil</h2>
             <form method="post"
-                  th:action="@{/createProfile}" th:object="${user}">
+                  th:action="@{/createProfile}" th:object="${profileDto}">
 
                 <div class="form-group m-3">
                     <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
@@ -22,60 +22,71 @@
                     </div>
                     <label for="firstNameInput" class="form-label h6 p-1">Prénom</label>
                     <input
-                            type="text" th:field="*{firstName}" class="form-control" id="firstNameInput"
+                            type="text" th:field="*{userDto.firstName}" class="form-control" id="firstNameInput"
                             placeholder="Saisir votre prénom" maxlength="64">
                     <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></small>
+                        <small th:if="${#fields.hasErrors('userDto.firstName')}" th:errors="*{userDto.firstName}"></small>
                     </div>
                 </div>
 
                 <div class="form-group m-3">
                     <label for="lastNameInput" class="form-label h6 p-1">Nom</label>
                     <input
-                            type="text" th:field="*{lastName}" class="form-control" id="lastNameInput"
+                            type="text" th:field="*{userDto.lastName}" class="form-control" id="lastNameInput"
                             placeholder="Saisir votre nom" maxlength="64">
                     <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></small>
+                        <small th:if="${#fields.hasErrors('userDto.lastName')}" th:errors="*{userDto.lastName}"></small>
                     </div>
                 </div>
 
                 <div class="form-group m-3">
                     <label for="emailInput" class="form-label h6 p-1">Email</label>
                     <input
-                            type="email" th:field="*{email}" class="form-control" id="emailInput"
+                            type="email" th:field="*{userDto.email}" class="form-control" id="emailInput"
                             aria-describedby="emailHelp" placeholder="Saisir votre email" maxlength="255">
                     <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                        <small th:if="${#fields.hasErrors('userDto.email')}" th:errors="*{userDto.email}"></small>
                     </div>
                 </div>
 
                 <div class="form-group m-3">
                     <label for="passwordInput" class="form-label h6 p-1">Mot de passe</label>
                     <input
-                            type="password" th:field="*{password}" class="form-control" id="passwordInput"
+                            type="password" th:field="*{passwordDto.password}" class="form-control" id="passwordInput"
                             placeholder="Saisir votre mot de passe" maxlength="64" minlength="8">
                     <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                        <small th:if="${#fields.hasErrors('passwordDto.password')}" th:errors="*{passwordDto.password}"></small>
+                    </div>
+                </div>
+
+                <div class="form-group m-3">
+                    <label for="passwordConfirmationInput" class="form-label h6 p-1">Confirmation du mot de passe</label>
+                    <input
+                            type="password" th:field="*{passwordDto.passwordConfirmation}" class="form-control" id="passwordConfirmationInput"
+                            placeholder="Confirmer votre mot de passe" maxlength="64" minlength="8">
+                    <div class="text-danger p-1">
+                        <small th:if="${#fields.hasErrors('passwordDto.passwordConfirmation')}"
+                               th:errors="*{passwordDto.passwordConfirmation}"></small>
                     </div>
                 </div>
 
                 <div class="form-group m-3">
                     <label for="phoneInput" class="form-label h6 p-1">Téléphone</label>
                     <input
-                            type="tel" th:field="*{phone}" class="form-control" id="phoneInput"
+                            type="tel" th:field="*{userDto.phone}" class="form-control" id="phoneInput"
                             placeholder="Saisir votre numéro de téléphone" maxlength="20">
                     <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+                        <small th:if="${#fields.hasErrors('userDto.phone')}" th:errors="*{userDto.phone}"></small>
                     </div>
                 </div>
 
                 <div class="form-group m-3">
                     <label for="addressInput" class="form-label h6 p-1">Adresse</label>
                     <input
-                            type="text" th:field="*{address}" class="form-control" id="addressInput"
+                            type="text" th:field="*{userDto.address}" class="form-control" id="addressInput"
                             placeholder="Saisir votre adresse" maxlength="255">
                     <div class="text-danger p-1">
-                        <small th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></small>
+                        <small th:if="${#fields.hasErrors('userDto.address')}" th:errors="*{userDto.address}"></small>
                     </div>
                 </div>
 

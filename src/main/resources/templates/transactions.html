@@ -12,7 +12,8 @@
     <div class="container p-5">
         <div class="container my-1">
             <div class="row">
-                <h3 class="col-5 text-start m-0 p-0">Nouveau virement</h3>
+                <h3 class="col-5 text-start m-0 p-0" th:unless="${contacts.empty}">Nouveau virement</h3>
+                <h3 class="col-5 text-start m-0 p-0" th:if="${contacts.empty}">Ajouter un contact</h3>
                 <a th:href="@{/contact}" class="btn btn-secondary col-2 offset-5">Nouveau contact</a>
             </div>
         </div>
@@ -20,7 +21,10 @@
             <span th:text="${message}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="bg-light p-3 mb-3 mt-2">
+        <div class="bg-light p-3 my-2" th:if="${contacts.empty}">
+            <span>Pour effectuer un virement, ajouter d'abord un nouveau contact.</span>
+        </div>
+        <div class="bg-light p-3 mb-3 mt-2" th:unless="${contacts.empty}">
             <form method="post"
                   th:action="@{/transaction}" th:object="${transactionDto}">
                 <div class="alert alert-danger text-danger pb-0" th:if="${#fields.hasErrors('global')}">
