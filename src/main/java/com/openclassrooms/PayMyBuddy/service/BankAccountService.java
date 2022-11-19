@@ -34,7 +34,7 @@ public class BankAccountService implements IBankAccountService {
 
     @Override
     public void deleteBankAccount(final Long id) {
-        BankAccount bankAccount = bankAccountRepository.findById(id).orElseThrow(BankAccountNotFoundException::new);
+        BankAccount bankAccount = bankAccountRepository.findByIdAndUserId(id, CurrentUserUtils.getCurrentUserId()).orElseThrow(BankAccountNotFoundException::new);
         bankAccount.setDeactivated(true);
         bankAccountRepository.save(bankAccount);
     }
@@ -59,7 +59,7 @@ public class BankAccountService implements IBankAccountService {
 
     @Override
     public void activateBankAccount(Long id) {
-        BankAccount bankAccount = bankAccountRepository.findById(id).orElseThrow(BankAccountNotFoundException::new);
+        BankAccount bankAccount = bankAccountRepository.findByIdAndUserId(id,CurrentUserUtils.getCurrentUserId()).orElseThrow(BankAccountNotFoundException::new);
         bankAccount.setDeactivated(false);
         bankAccountRepository.save(bankAccount);
     }

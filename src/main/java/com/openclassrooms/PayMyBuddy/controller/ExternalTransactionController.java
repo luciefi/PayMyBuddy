@@ -4,9 +4,7 @@ import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
 import com.openclassrooms.PayMyBuddy.model.ExternalTransactionDto;
-import com.openclassrooms.PayMyBuddy.service.BankAccountService;
-import com.openclassrooms.PayMyBuddy.service.ExternalTransactionService;
-import com.openclassrooms.PayMyBuddy.service.UserService;
+import com.openclassrooms.PayMyBuddy.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,13 +21,13 @@ import java.util.Collections;
 public class ExternalTransactionController {
 
     @Autowired
-    private ExternalTransactionService service;
+    private IExternalTransactionService service;
 
     @Autowired
-    private BankAccountService bankAccountService;
+    private IBankAccountService bankAccountService;
 
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
     public static final String NEW_TRANSACTION_SUCCESS_MESSAGE = "Le virement a été effectué !";
 

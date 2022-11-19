@@ -4,9 +4,7 @@ import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
 import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.ContactDto;
 import com.openclassrooms.PayMyBuddy.model.TransactionDto;
-import com.openclassrooms.PayMyBuddy.service.IContactService;
-import com.openclassrooms.PayMyBuddy.service.TransactionService;
-import com.openclassrooms.PayMyBuddy.service.UserService;
+import com.openclassrooms.PayMyBuddy.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,10 +20,10 @@ import javax.validation.Valid;
 public class TransactionController {
 
     @Autowired
-    private TransactionService service;
+    private ITransactionService service;
 
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
     @Autowired
     private IContactService contactService;

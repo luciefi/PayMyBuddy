@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Page d'erreur</title>
-  <link rel="stylesheet" href="/css/style.css" />
+    <meta charset="UTF-8">
+    <title>Page d'erreur</title>
+    <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
 <div class="container">
-  <div th:insert="headerHome :: header"></div>
-  <h2 class="h2">Page d'erreur 404</h2>
-  <a href="/">Home</a>
+    <div th:insert="headerHome :: header"></div>
+    <h2 class="h2">Page non trouvée</h2>
+    <p>Une erreur est survenue.</p>
+    <p> Revenir à la <a href="/">page d'accueil</a></p>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"

@@ -28,6 +28,7 @@ public class TransactionService implements ITransactionService {
 
     public static final double COMMISSION_RATE = .005;
 
+    @Override
     public List<TransactionDto> getAll() {
         List<Transaction> transactions = transactionRepository.findByPayerIdOrRecipientIdOrderByTimestampDesc(CurrentUserUtils.getCurrentUserId(),
                 CurrentUserUtils.getCurrentUserId());
@@ -37,6 +38,7 @@ public class TransactionService implements ITransactionService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional
     public void saveTransaction(TransactionDto transactionDto) throws InsufficientBalanceException {
         User recipient = userRepository.findById(transactionDto.getContactId()).orElseThrow(UserNotFoundException::new);

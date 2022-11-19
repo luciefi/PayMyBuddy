@@ -1,7 +1,5 @@
 package com.openclassrooms.PayMyBuddy.controller;
 
-import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -22,10 +20,13 @@ public class PayMyBuddyErrorController implements ErrorController {
 
             if (statusCode == HttpStatus.NOT_FOUND.value()) {
                 return "error-404";
-            } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+            }
+            if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 return "error-500";
             }
-            // TODO 401 + switch case
+            if (statusCode == HttpStatus.UNAUTHORIZED.value()) {
+                return "error-401";
+            }
         }
         return "error";
     }
