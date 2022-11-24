@@ -37,24 +37,6 @@ public class HomeController {
 
     @GetMapping("/login")
     public String login(Model model) {
-        LoginDto loginDto = new LoginDto();
-        model.addAttribute("loginDto", loginDto);
         return "login";
     }
-
-    @PostMapping("/login")
-    public String login(@Valid LoginDto loginDto, BindingResult result) {
-        if (result.hasErrors()) {
-            return "login";
-        }
-        try {
-            userService.logUserIn(loginDto);
-            return "redirect:/";
-        } catch (IncorrectCredentialsException e) {
-            ObjectError error = new ObjectError("globalError", e.getMessage());
-            result.addError(error);
-            return "login";
-        }
-    }
-
 }

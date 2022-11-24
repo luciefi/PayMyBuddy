@@ -9,9 +9,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +21,9 @@ public class SpringSecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private DataSource dataSource;
 
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService);
@@ -31,6 +36,7 @@ public class SpringSecurityConfig {
                 .authorizeRequests(auth -> {
                     auth.antMatchers("/").permitAll();
                     auth.antMatchers("/css/style.css").permitAll();
+                    auth.antMatchers("/images/img.png").permitAll();
                     auth.antMatchers("/login").permitAll();
                     auth.antMatchers(HttpMethod.POST, "/login").permitAll();
                     auth.antMatchers("/createProfile").permitAll();
@@ -42,22 +48,27 @@ public class SpringSecurityConfig {
                     formLogin.loginProcessingUrl("/login");
                     formLogin.defaultSuccessUrl("/");
                     formLogin.permitAll();
-
-                    //formLogin.failureUrl("/login");
+                })
+                .logout(logout -> {
+                    logout.logoutUrl("/logout");
+                    logout.deleteCookies("JSESSIONID");
+                })
+                .rememberMe(rememberMe -> {
+                    rememberMe.key("theSecretKey");
+                    rememberMe.tokenRepository(persistentTokenRepository());
                 })
                 .build();
     }
 
-    /*
+    @Bean(name = "persistentTokenRepository")
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
+    }
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    */
-
-    @Bean
-    public NoOpPasswordEncoder passwordEncoder() {
-        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
-    }
-
 }

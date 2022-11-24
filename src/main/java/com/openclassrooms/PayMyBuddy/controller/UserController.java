@@ -23,7 +23,8 @@ public class UserController {
     @Autowired
     private IUserService service;
 
-    public static final String NEW_PROFILE_SUCCESS_MESSAGE = "\u2714 \u2007 Votre profil a été crée !";
+    public static final String NEW_PROFILE_SUCCESS_MESSAGE = "\u2714 \u2007 Votre profil a été crée ! Vous pouvez maintenant vous " +
+            "connecter.";
     public static final String UPDATE_PROFILE_SUCCESS_MESSAGE = "\u2714 \u2007 Votre profil a été mis à jour !";
     public static final String UPDATE_PASSWORD_SUCCESS_MESSAGE = "\u2714 \u2007 Votre mot de passe a été mis à jour !";
 
@@ -42,7 +43,7 @@ public class UserController {
         try {
             service.saveNewUser(profileDto);
             redirectAttributes.addFlashAttribute("message", NEW_PROFILE_SUCCESS_MESSAGE);
-            return "redirect:/";
+            return "redirect:/login";
         } catch (EmailAlreadyExistsException | PasswordAndConfirmationNotIdenticalException e) {
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);

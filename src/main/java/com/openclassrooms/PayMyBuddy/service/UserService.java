@@ -5,6 +5,7 @@ import com.openclassrooms.PayMyBuddy.model.*;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import com.openclassrooms.PayMyBuddy.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 
@@ -15,6 +16,9 @@ import java.util.*;
 public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Optional<User> getUser(final Long id) {
@@ -50,7 +54,8 @@ public class UserService implements IUserService {
     public User saveNewUser(ProfileDto profileDto) {
         checkPasswordConfirmation(profileDto.getPasswordDto());
         User user = UserUtils.convertToUser(profileDto);
-        Optional<User> sameEmailUser = userRepository.findByEmail(user.getEmail());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Optional<User> sameEmailUser = userRepository.findByEmailIgnoreCase(user.getEmail());
         if (sameEmailUser.isPresent()) {
             throw new EmailAlreadyExistsException();
         }
@@ -61,7 +66,7 @@ public class UserService implements IUserService {
 
     @Override
     public User updateUser(UserDto userDto) {
-        User existingUser = userRepository.findByEmail(userDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        User existingUser = userRepository.findByEmailIgnoreCase(userDto.getEmail()).orElseThrow(UserNotFoundException::new);
         User user = UserUtils.convertToUser(userDto);
         if (!CurrentUserUtils.getCurrentUserId().equals(existingUser.getId())) {
             throw new EmailAlreadyExistsException();
@@ -76,6 +81,7 @@ public class UserService implements IUserService {
     public void updatePassword(PasswordUpdateDto passwordUpdateDto) {
         checkPasswordConfirmation(passwordUpdateDto);
         User user = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        encryptPasswords(passwordUpdateDto);
         checkOldPassword(passwordUpdateDto.getOldPassword(), user.getPassword());
         user.setPassword(passwordUpdateDto.getPassword());
         userRepository.save(user);
@@ -106,18 +112,6 @@ public class UserService implements IUserService {
         return UserUtils.convertToUserDto(user);
     }
 
-    @Override
-    public void logUserIn(LoginDto loginDto) throws IncorrectCredentialsException {
-        User user = userRepository.findByEmail(loginDto.getEmail()).orElseThrow(UserNotFoundException::new);
-        if (user.getPassword() != loginDto.getPassword()) {
-            throw new IncorrectCredentialsException();
-        }
-        Calendar calendar = Calendar.getInstance();
-        user.setLastOnlineTime(new Timestamp(calendar.getTime().getTime()));
-        userRepository.save(user);
-        // TODO current user à updater
-    }
-
     private void checkPasswordConfirmation(PasswordDto passwordDto) {
         if (!passwordDto.getPassword().equals(passwordDto.getPasswordConfirmation())) {
             throw new PasswordAndConfirmationNotIdenticalException();
@@ -129,4 +123,10 @@ public class UserService implements IUserService {
             throw new IncorrectCurrentPasswordException();
         }
     }
+
+    private void encryptPasswords(PasswordUpdateDto passwordUpdateDto) {
+        passwordUpdateDto.setOldPassword(passwordEncoder.encode(passwordUpdateDto.getOldPassword()));
+        passwordUpdateDto.setPassword(passwordEncoder.encode(passwordUpdateDto.getPassword()));
+    }
+
 }

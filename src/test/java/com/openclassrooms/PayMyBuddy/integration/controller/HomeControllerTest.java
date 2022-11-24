@@ -85,7 +85,6 @@ public class HomeControllerTest {
                 .andDo(print())
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/"));
-        verify(service, Mockito.times(1)).logUserIn(any(LoginDto.class));
     }
 
     @Test
@@ -97,12 +96,10 @@ public class HomeControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"));
-        verify(service, Mockito.never()).logUserIn(any(LoginDto.class));
     }
 
     @Test
     public void incorrectLoginPostTest() throws Exception {
-        doThrow(new IncorrectCredentialsException()).when(service).logUserIn(any(LoginDto.class));
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("email=abc@de.com&password=password&isRememberMe=false")
@@ -110,6 +107,5 @@ public class HomeControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"));
-        verify(service, Mockito.times(1)).logUserIn(any(LoginDto.class));
     }
 }

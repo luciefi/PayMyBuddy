@@ -13,15 +13,19 @@ public class UserDetailsImpl implements UserDetails {
 
     private String userName;
     private String password;
+
+    private Long id;
     private List<GrantedAuthority> authorities;
 
     public UserDetailsImpl(User user) {
         this.userName = user.getEmail();
         this.password = user.getPassword();
+        this.id = user.getId();
         this.authorities = Collections.emptyList();
     }
 
-    public UserDetailsImpl() {}
+    public UserDetailsImpl() {
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -56,5 +60,9 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

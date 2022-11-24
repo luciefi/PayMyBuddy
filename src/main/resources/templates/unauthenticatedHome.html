@@ -10,13 +10,13 @@
 
 <div class="container">
     <div th:insert="headerHome :: unauthenticatedHeader"></div>
-    <h2 class="mb-3 mx-5 mt-3">Bienvenue sur PayMyBuddy !</h2>
-    <p class="mx-5">L'application qui vous permet de transférer de l'argent pour gérer vos finances ou payer vos amis.<br/>
+    <h2 class="mb-3 mt-3 text-center">Bienvenue sur PayMyBuddy !</h2>
+    <p class=" text-center">L'application qui vous permet de transférer de l'argent pour gérer vos finances ou payer vos amis.<br/>
         Pour continuer, veuiller vous inscrire ou vous connecter.</p>
     <div class="container mb-5">
         <div class="row justify-content-center">
-            <a th:href="@{/}" class="btn btn-secondary col-2 mx-2">Inscription</a>
-            <a th:href="@{/}" class="btn btn-secondary col-2 mx-2">Connexion</a>
+            <a th:href="@{/createProfile}" class="btn btn-secondary col-2 mx-2">Inscription</a>
+            <a th:href="@{/login}" class="btn btn-secondary col-2 mx-2">Connexion</a>
         </div>
     </div>
     <div class="pb-5 px-5">

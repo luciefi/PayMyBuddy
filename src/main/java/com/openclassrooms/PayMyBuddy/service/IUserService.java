@@ -26,7 +26,5 @@ public interface IUserService {
 
     UserDto getCurrentUserDto();
 
-    void logUserIn(LoginDto loginDto);
-
     void updatePassword(PasswordUpdateDto passwordUpdateDto);
 }
