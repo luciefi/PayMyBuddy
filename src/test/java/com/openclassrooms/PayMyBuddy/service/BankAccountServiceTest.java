@@ -1,5 +1,6 @@
 package com.openclassrooms.PayMyBuddy.service;
 
+import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
@@ -10,8 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({SpringExtension.class,MockitoExtension.class})
+@ContextConfiguration
+@WithMockCustomUser
 class BankAccountServiceTest {
 
     @Mock
@@ -50,12 +53,13 @@ class BankAccountServiceTest {
     }
 
     @Test
+    @WithMockCustomUser
     void getBankAccountsTest() {
         // ARRANGE
         when(bankAccountRepository.findByUserId(anyLong())).thenReturn(Collections.singletonList(new BankAccount()));
 
         // ACT - ASSERT
-        List<BankAccount> bankAccountList = bankAccountService.getAllForCurrentUser();
+        List<BankAccount> bankAccountList = bankAccountService.getPaginatedForCurrentUser();
         assertEquals(1, bankAccountList.size());
         verify(bankAccountRepository, times(1)).findByUserId(anyLong());
     }
@@ -64,7 +68,7 @@ class BankAccountServiceTest {
     void deleteBankAccountTest() {
         // ARRANGE
         BankAccount bankAccount = new BankAccount();
-        when(bankAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankAccount));
+        when(bankAccountRepository.findByIdAndUserId(anyLong(),anyLong())).thenReturn(Optional.of(bankAccount));
         // ACT - ASSERT
         bankAccountService.deleteBankAccount(BANK_ACCOUNT_ID_2);
         verify(bankAccountRepository, times(1)).save(any(BankAccount.class));
@@ -139,26 +143,26 @@ class BankAccountServiceTest {
         // ARRANGE
         BankAccount ba = new BankAccount();
         ba.setId(BANK_ACCOUNT_ID_2);
-        when(bankAccountRepository.findById(anyLong())).thenReturn(Optional.of(ba));
+        when(bankAccountRepository.findByIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.of(ba));
 
         // ACT
         bankAccountService.activateBankAccount(1L);
 
         // ASSERT
-        verify(bankAccountRepository, times(1)).findById(anyLong());
+        verify(bankAccountRepository, times(1)).findByIdAndUserId(anyLong(), anyLong());
         verify(bankAccountRepository, times(1)).save(any(BankAccount.class));
     }
 
     @Test
     void activateBankAccountUserNotFound() {
         // ARRANGE
-        when(bankAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(bankAccountRepository.findByIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.empty());
 
         // ACT
         assertThrows(BankAccountNotFoundException.class, () -> bankAccountService.activateBankAccount(1L));
 
         // ASSERT
-        verify(bankAccountRepository, times(1)).findById(anyLong());
+        verify(bankAccountRepository, times(1)).findByIdAndUserId(anyLong(), anyLong());
         verify(bankAccountRepository, never()).save(any(BankAccount.class));
     }
 }

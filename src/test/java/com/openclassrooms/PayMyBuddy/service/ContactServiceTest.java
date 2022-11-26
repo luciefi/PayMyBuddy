@@ -1,5 +1,6 @@
 package com.openclassrooms.PayMyBuddy.service;
 
+import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.exception.ContactCannotBeCurrentUserException;
 import com.openclassrooms.PayMyBuddy.exception.PayerRecipientAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.PayerRecipientNotFoundException;
@@ -10,12 +11,15 @@ import com.openclassrooms.PayMyBuddy.model.PayerRecipientId;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.PayerRecipientRepository;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
+import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,20 +32,22 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({SpringExtension.class,MockitoExtension.class})
+@ContextConfiguration
+@WithMockCustomUser
 class ContactServiceTest {
 
     @Mock
     private PayerRecipientRepository payerRecipientRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
 
     @InjectMocks
     private ContactService contactService;
 
-    final Long PAYER_ID = Long.valueOf(1);
-    final Long RECIPIENT_ID = Long.valueOf(2);
+    final Long PAYER_ID = 1L;
+    final Long RECIPIENT_ID = 2L;
 
     final String PAYER_EMAIL = "payer@abc.com";
     final String RECIPIENT_EMAIL = "recipient@abc.com";
@@ -55,36 +61,17 @@ class ContactServiceTest {
         recipient.setEmail(RECIPIENT_EMAIL);
         payerRecipient.setRecipient(recipient);
         when(payerRecipientRepository.findByPayerIdAndDeleted(anyLong(), anyBoolean())).thenReturn(Collections.singletonList(payerRecipient));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(recipient));
+        when(userService.getUser(anyLong())).thenReturn(recipient);
 
         // Act
-        Iterable<ContactDto> contacts = (List<ContactDto>) contactService.getContacts();
+        List<ContactDto> contacts = (List<ContactDto>) contactService.getContacts();
 
         // Assert
         assertThat(contacts).isInstanceOf(List.class);
-        assertThat(((List<ContactDto>) contacts).size()).isEqualTo(1);
-        assertThat(((List<ContactDto>) contacts).get(0).getEmail()).isEqualTo(RECIPIENT_EMAIL);
+        assertThat(contacts.size()).isEqualTo(1);
+        assertThat(contacts.get(0).getEmail()).isEqualTo(RECIPIENT_EMAIL);
         verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndDeleted(anyLong(), anyBoolean());
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-    }
-
-    @Test
-    void getUnknownContacts() {
-        // Arrange
-        PayerRecipient payerRecipient = new PayerRecipient();
-        User recipient = new User();
-        recipient.setId(RECIPIENT_ID);
-        recipient.setEmail(RECIPIENT_EMAIL);
-        payerRecipient.setRecipient(recipient);
-        when(payerRecipientRepository.findByPayerIdAndDeleted(anyLong(), anyBoolean())).thenReturn(Collections.singletonList(payerRecipient));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        // Act
-        assertThrows(UserNotFoundException.class, () -> contactService.getContacts());
-
-        // Assert
-        verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndDeleted(anyLong(), anyBoolean());
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
+        verify(userService, Mockito.times(1)).getUser(anyLong());
     }
 
     @Test
@@ -96,8 +83,8 @@ class ContactServiceTest {
         User recipient = new User();
         recipient.setEmail(RECIPIENT_EMAIL);
         recipient.setId(RECIPIENT_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer));
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(recipient));
+        when(userService.getUser(anyLong())).thenReturn(payer);
+        when(userService.getUserByEmail(anyString())).thenReturn(recipient);
         PayerRecipient payerRecipient = new PayerRecipient();
         payerRecipient.setDeleted(true);
         when(payerRecipientRepository.findByPayerIdAndRecipientIdAndDeleted(anyLong(), anyLong(), anyBoolean())).thenReturn(Optional.of(payerRecipient));
@@ -106,8 +93,8 @@ class ContactServiceTest {
         contactService.saveContact(recipient.getEmail());
 
         // Assert
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(userRepository, Mockito.times(1)).findByEmail(anyString());
+        verify(userService, Mockito.times(1)).getUser(anyLong());
+        verify(userService, Mockito.times(1)).getUserByEmail(anyString());
         verify(payerRecipientRepository, Mockito.times(1)).save(any(PayerRecipient.class));
     }
 
@@ -121,8 +108,8 @@ class ContactServiceTest {
         User recipient = new User();
         recipient.setEmail(RECIPIENT_EMAIL);
         recipient.setId(RECIPIENT_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer));
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(recipient));
+        when(userService.getUser(anyLong())).thenReturn(payer);
+        when(userService.getUserByEmail(anyString())).thenReturn(recipient);
         PayerRecipient payerRecipient = new PayerRecipient();
         payerRecipient.setDeleted(false);
         when(payerRecipientRepository.findByPayerIdAndRecipientIdAndDeleted(anyLong(), anyLong(), anyBoolean())).thenReturn(Optional.of(payerRecipient));
@@ -131,8 +118,8 @@ class ContactServiceTest {
         assertThrows(PayerRecipientAlreadyExistsException.class, () -> contactService.saveContact(recipient.getEmail()));
 
         // Assert
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(userRepository, Mockito.times(1)).findByEmail(anyString());
+        verify(userService, Mockito.times(1)).getUser(anyLong());
+        verify(userService, Mockito.times(1)).getUserByEmail(anyString());
         verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndRecipientIdAndDeleted(anyLong(), anyLong(), anyBoolean());
         verify(payerRecipientRepository, Mockito.never()).save(any(PayerRecipient.class));
     }
@@ -146,8 +133,8 @@ class ContactServiceTest {
         User recipient = new User();
         recipient.setEmail(RECIPIENT_EMAIL);
         recipient.setId(RECIPIENT_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer));
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(recipient));
+        when(userService.getUser(anyLong())).thenReturn(payer);
+        when(userService.getUserByEmail(anyString())).thenReturn(recipient);
         PayerRecipient payerRecipient = new PayerRecipient();
         payerRecipient.setDeleted(true);
         payerRecipient.setPayerId(PAYER_ID);
@@ -158,8 +145,8 @@ class ContactServiceTest {
         contactService.saveContact(recipient.getEmail());
 
         // Assert
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(userRepository, Mockito.times(1)).findByEmail(anyString());
+        verify(userService, Mockito.times(1)).getUser(anyLong());
+        verify(userService, Mockito.times(1)).getUserByEmail(anyString());
         verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndRecipientIdAndDeleted(anyLong(), anyLong(), anyBoolean());
         verify(payerRecipientRepository, Mockito.times(1)).save(any(PayerRecipient.class));
     }
@@ -172,14 +159,14 @@ class ContactServiceTest {
         payer.setEmail(PAYER_EMAIL);
         payer.setId(PAYER_ID);
         ;
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer));
+        when(userService.getUser(anyLong())).thenReturn(payer);
 
         // Act
         assertThrows(ContactCannotBeCurrentUserException.class, () -> contactService.saveContact(payer.getEmail()));
 
         // Assert
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(userRepository, Mockito.never()).findByEmail(anyString());
+        verify(userService, Mockito.times(1)).getUser(anyLong());
+        verify(userService, Mockito.never()).getUserByEmail(anyString());
         verify(payerRecipientRepository, Mockito.never()).findByPayerIdAndRecipientIdAndDeleted(anyLong(), anyLong(), anyBoolean());
         verify(payerRecipientRepository, Mockito.never()).save(any(PayerRecipient.class));
     }
@@ -193,44 +180,15 @@ class ContactServiceTest {
         User recipient = new User();
         recipient.setEmail(RECIPIENT_EMAIL);
         recipient.setId(RECIPIENT_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer)).thenReturn(Optional.of(recipient));
+        when(userService.getUser(anyLong())).thenReturn(payer).thenReturn(recipient);
         when(payerRecipientRepository.findById(any(PayerRecipientId.class))).thenReturn(Optional.of(new PayerRecipient()));
 
         // Act
         contactService.deleteContact(RECIPIENT_ID);
 
         // Assert
-        verify(userRepository, Mockito.times(2)).findById(anyLong());
+        verify(userService, Mockito.times(2)).getUser(anyLong());
         verify(payerRecipientRepository, Mockito.times(1)).findById(any(PayerRecipientId.class));
-    }
-
-    @Test
-    void deleteContactUnknownPayer() {
-        // Arrange
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        // Act
-        assertThrows(UserNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_ID));
-
-        // Assert
-        verify(userRepository, Mockito.times(1)).findById(anyLong());
-        verify(payerRecipientRepository, Mockito.never()).findById(any(PayerRecipientId.class));
-    }
-
-    @Test
-    void deleteContactUnknownRecipient() {
-        // Arrange
-        User payer = new User();
-        payer.setEmail(PAYER_EMAIL);
-        payer.setId(PAYER_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer)).thenReturn(Optional.empty());
-
-        // Act
-        assertThrows(UserNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_ID));
-
-        // Assert
-        verify(userRepository, Mockito.times(2)).findById(anyLong());
-        verify(payerRecipientRepository, Mockito.never()).findById(any(PayerRecipientId.class));
     }
 
     @Test
@@ -242,14 +200,39 @@ class ContactServiceTest {
         User recipient = new User();
         recipient.setEmail(RECIPIENT_EMAIL);
         recipient.setId(RECIPIENT_ID);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(payer)).thenReturn(Optional.of(recipient));
+        when(userService.getUser(anyLong())).thenReturn(payer).thenReturn(recipient);
         when(payerRecipientRepository.findById(any(PayerRecipientId.class))).thenReturn(Optional.empty());
 
         // Act
         assertThrows(PayerRecipientNotFoundException.class, () -> contactService.deleteContact(RECIPIENT_ID));
 
         // Assert
-        verify(userRepository, Mockito.times(2)).findById(anyLong());
+        verify(userService, Mockito.times(2)).getUser(anyLong());
         verify(payerRecipientRepository, Mockito.times(1)).findById(any(PayerRecipientId.class));
     }
+
+    @Test
+    void updateLastTransactionDateTest() {
+        // Arrange
+        when(payerRecipientRepository.findByPayerIdAndRecipientId(anyLong(), anyLong())).thenReturn(Optional.of(new PayerRecipient()));
+
+        // Act
+          contactService.updateLastTransactionDate(RECIPIENT_ID);
+
+        // Assert
+        verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndRecipientId(anyLong(), anyLong());
+        verify(payerRecipientRepository, Mockito.times(1)).save(any(PayerRecipient.class));
+    }
+
+    @Test
+    void updateLastTransactionDateUserNotFoundTest() {
+        // Arrange
+        when(payerRecipientRepository.findByPayerIdAndRecipientId(anyLong(), anyLong())).thenReturn(Optional.empty());
+
+        // Act
+        assertThrows(PayerRecipientNotFoundException.class, () -> contactService.updateLastTransactionDate(RECIPIENT_ID));
+
+        // Assert
+        verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndRecipientId(anyLong(), anyLong());
+        verify(payerRecipientRepository, Mockito.times(0)).save(any(PayerRecipient.class));    }
 }

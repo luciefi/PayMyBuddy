@@ -1,12 +1,19 @@
 package com.openclassrooms.PayMyBuddy.utils;
 
+import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.model.*;
 import com.openclassrooms.PayMyBuddy.service.TransactionService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration
+@WithMockCustomUser
 public class TransactionUtilsTest {
 
     @Test

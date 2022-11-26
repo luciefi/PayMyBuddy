@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 class ExternalTransactionControllerTest {
 
     @MockBean
@@ -63,7 +65,7 @@ class ExternalTransactionControllerTest {
                 .andExpect(view().name("redirect:/externalTransaction"));
         verify(service, Mockito.times(1)).saveExternalTransaction(any(ExternalTransactionDto.class));
         verify(userService, never()).getBalance();
-        verify(bankAccountService, never()).getAllForCurrentUser();
+        verify(bankAccountService, never()).getPaginatedForCurrentUser();
     }
 
     @Test

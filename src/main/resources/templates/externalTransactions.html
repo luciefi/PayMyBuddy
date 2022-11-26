@@ -19,7 +19,6 @@
                 <button class="btn btn-secondary col-3 offset-1" data-bs-toggle="modal"
                         th:attr="data-bs-target=${'#addModal'}">Nouveau virement externe
                 </button>
-                <a th:href="@{/newExternalTransaction}"></a>
             </div>
         </div>
         <div class="alert alert-success alert-dismissible fade show my-1" role="alert" th:unless="${#strings.isEmpty(message)}">
@@ -67,7 +66,7 @@
             </div>
             <form method="post"
                   th:action="@{/newExternalTransaction}" th:object="${__${'externalTransaction'+'Dto'}__}">
-                <div class="modal-body">
+                <div class="modal-body" th:unless="${bankAccounts.empty}">
                     <div class="form-group m-3">
                         <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
                             <span th:text="${err}"></span>
@@ -114,15 +113,21 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal-body" th:if="${bankAccounts.empty}">
+                    <span>Pour effectuer un virement externe, <a href="/bankAccount">ajouter d'abord un compte bancaire.</a> </span>
+                </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-info">Valider</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:unless="${bankAccounts.empty}">Annuler</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:if="${bankAccounts.empty}">OK</button>
+                    <button type="submit" class="btn btn-info" th:unless="${bankAccounts.empty}">Valider</button>
 
                     <script th:inline="javascript" th:if="${#fields.hasAnyErrors()}">
                         var myModal = new bootstrap.Modal(document.getElementById('addModal'), {
                             keyboard: false
                         })
                         myModal.show();
+
+
                     </script>
                 </div>
             </form>

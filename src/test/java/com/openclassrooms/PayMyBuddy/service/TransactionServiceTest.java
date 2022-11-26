@@ -1,5 +1,6 @@
 package com.openclassrooms.PayMyBuddy.service;
 
+import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
 import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.Transaction;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,7 +25,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({SpringExtension.class,MockitoExtension.class})
+@ContextConfiguration
+@WithMockCustomUser
 class TransactionServiceTest {
 
     @Mock
@@ -31,6 +36,8 @@ class TransactionServiceTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private ContactService contactService;
     @Mock
     private UserRepository userRepository;
 
@@ -76,34 +83,15 @@ class TransactionServiceTest {
         transactionDto.setContactId(2L);
         transactionDto.setAmount(1d);
         User user = new User();
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userService.getUser(anyLong())).thenReturn(user);
 
         // Act
         transactionService.saveTransaction(transactionDto);
 
         // Assert
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(userService, times(1)).getUser(anyLong());
         verify(userService, times(1)).debitBalance(anyDouble());
         verify(userService, times(1)).creditBalance(anyDouble(), anyLong());
         verify(transactionRepository, times(1)).save(any(Transaction.class));
-    }
-
-    @Test
-    void saveTransactionUserNotFound() throws InsufficientBalanceException {
-        // Arrange
-        TransactionDto transactionDto = new TransactionDto();
-        transactionDto.setContactId(2L);
-        transactionDto.setAmount(1d);
-        User user = new User();
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        // Act
-        assertThrows(UserNotFoundException.class, () -> transactionService.saveTransaction(transactionDto));
-
-        // Assert
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userService, times(0)).debitBalance(anyDouble());
-        verify(userService, times(0)).creditBalance(anyDouble(), anyLong());
-        verify(transactionRepository, times(0)).save(any(Transaction.class));
     }
 }

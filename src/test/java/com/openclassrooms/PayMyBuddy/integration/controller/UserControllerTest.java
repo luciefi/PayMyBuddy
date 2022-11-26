@@ -1,5 +1,6 @@
 package com.openclassrooms.PayMyBuddy.integration.controller;
 
+import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.exception.EmailAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.IncorrectCurrentPasswordException;
 import com.openclassrooms.PayMyBuddy.exception.PasswordAndConfirmationNotIdenticalException;
@@ -15,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -27,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 public class UserControllerTest {
 
     @MockBean
@@ -36,6 +40,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @WithAnonymousUser
     public void createProfileTest() throws Exception {
         mockMvc.perform(get("/createProfile"))
                 .andDo(print())
@@ -45,6 +50,16 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockCustomUser
+    public void createProfileAuthenticatedTest() throws Exception {
+        mockMvc.perform(get("/createProfile"))
+                .andDo(print())
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/"));
+    }
+
+    @Test
+    @WithAnonymousUser
     public void createProfilePostTest() throws Exception {
         mockMvc.perform(post("/createProfile")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -54,11 +69,12 @@ public class UserControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/"));
+                .andExpect(view().name("redirect:/login"));
         verify(service, Mockito.times(1)).saveNewUser(any(ProfileDto.class));
     }
 
     @Test
+    @WithAnonymousUser
     public void createProfilePostFormErrorTest() throws Exception {
         mockMvc.perform(post("/createProfile")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -72,6 +88,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithAnonymousUser
     public void createProfilePostAlreadyExistsTest() throws Exception {
         when(service.saveNewUser(any(ProfileDto.class))).thenThrow(new EmailAlreadyExistsException());
         mockMvc.perform(post("/createProfile")
@@ -87,6 +104,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithAnonymousUser
     public void createProfilePostPasswordAndConfirmationNotIdenticalExceptionTest() throws Exception {
         when(service.saveNewUser(any(ProfileDto.class))).thenThrow(new PasswordAndConfirmationNotIdenticalException());
         mockMvc.perform(post("/createProfile")

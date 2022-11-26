@@ -3,7 +3,6 @@ package com.openclassrooms.PayMyBuddy.service;
 import com.openclassrooms.PayMyBuddy.exception.*;
 import com.openclassrooms.PayMyBuddy.model.*;
 import com.openclassrooms.PayMyBuddy.repository.PayerRecipientRepository;
-import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 import com.openclassrooms.PayMyBuddy.utils.ContactUtils;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ContactService implements IContactService {
-
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private PayerRecipientRepository payerRecipientRepository;
@@ -29,7 +27,7 @@ public class ContactService implements IContactService {
         Long currentUserId = CurrentUserUtils.getCurrentUserId();
         List<PayerRecipient> contacts = payerRecipientRepository.findByPayerIdAndDeleted(currentUserId, false);
         List<ContactDto> contactDtoList = contacts.stream().map(payerRecipient -> {
-            User user = userRepository.findById(payerRecipient.getRecipient().getId()).orElseThrow(UserNotFoundException::new);
+            User user = userService.getUser(payerRecipient.getRecipient().getId());
             return ContactUtils.convertToContactDto(user, payerRecipient);
         }).collect(Collectors.toList());
         return contactDtoList;
@@ -37,12 +35,12 @@ public class ContactService implements IContactService {
 
     @Override
     public String saveContact(String emailAddress) {
-        User payer = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(CurrentUserNotFoundException::new);
+        User payer = userService.getUser(CurrentUserUtils.getCurrentUserId());
         if (payer.getEmail().equals(emailAddress)) {
             throw new ContactCannotBeCurrentUserException();
         }
 
-        User recipient = userRepository.findByEmail(emailAddress).orElseThrow(UserNotFoundException::new);
+        User recipient = userService.getUserByEmail(emailAddress);
         Optional<PayerRecipient> existingContact = getExistingContact(payer, recipient);
         PayerRecipient payerRecipient = existingContact.map(this::undeleteContact).orElseGet(() -> createContact(payer, recipient));
         payerRecipientRepository.save(payerRecipient);
@@ -64,11 +62,20 @@ public class ContactService implements IContactService {
 
     @Override
     public void deleteContact(Long recipientId) {
-        User payer = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
-        User recipient = userRepository.findById(recipientId).orElseThrow(UserNotFoundException::new);
+        User payer = userService.getUser(CurrentUserUtils.getCurrentUserId());
+        User recipient = userService.getUser(recipientId);
         PayerRecipientId payerRecipientId = new PayerRecipientId(payer.getId(), recipient.getId());
         PayerRecipient payerRecipient = payerRecipientRepository.findById(payerRecipientId).orElseThrow(PayerRecipientNotFoundException::new);
         payerRecipient.setDeleted(true);
+        payerRecipientRepository.save(payerRecipient);
+    }
+
+    @Override
+    public void updateLastTransactionDate(Long contactId) {
+        PayerRecipient payerRecipient =
+                payerRecipientRepository.findByPayerIdAndRecipientId(CurrentUserUtils.getCurrentUserId(), contactId).orElseThrow(PayerRecipientNotFoundException::new);
+        Calendar calendar = Calendar.getInstance();
+        payerRecipient.setLastTransactionDate(new Timestamp(calendar.getTime().getTime()));
         payerRecipientRepository.save(payerRecipient);
     }
 

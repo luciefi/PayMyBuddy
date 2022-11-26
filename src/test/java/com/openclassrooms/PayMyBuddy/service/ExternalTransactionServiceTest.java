@@ -1,5 +1,6 @@
 package com.openclassrooms.PayMyBuddy.service;
 
+import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
@@ -14,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -26,7 +29,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({SpringExtension.class,MockitoExtension.class})
+@ContextConfiguration
+@WithMockCustomUser
 class ExternalTransactionServiceTest {
 
     @Mock

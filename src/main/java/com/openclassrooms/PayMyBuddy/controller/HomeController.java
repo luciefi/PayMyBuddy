@@ -1,18 +1,13 @@
 package com.openclassrooms.PayMyBuddy.controller;
 
-import com.openclassrooms.PayMyBuddy.exception.IncorrectCredentialsException;
-import com.openclassrooms.PayMyBuddy.model.LoginDto;
 import com.openclassrooms.PayMyBuddy.service.IUserService;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import javax.validation.Valid;
 
 @Controller
 public class HomeController {
@@ -25,9 +20,7 @@ public class HomeController {
         if (CurrentUserUtils.getCurrentUserId() == null) {
             return "unauthenticatedHome";
         }
-        double balance = userService.getBalance();
-        model.addAttribute("balance", balance);
-        return "home";
+        return getAuthenticatedHome(model);
     }
 
     @GetMapping("/sitemap")
@@ -37,6 +30,15 @@ public class HomeController {
 
     @GetMapping("/login")
     public String login(Model model) {
-        return "login";
+        if (CurrentUserUtils.getCurrentUserId() == null) {
+            return "login";
+        }
+        return getAuthenticatedHome(model);
+    }
+
+    protected String getAuthenticatedHome(Model model){
+        double balance = userService.getBalance();
+        model.addAttribute("balance", balance);
+        return "home";
     }
 }

@@ -28,7 +28,7 @@ public class BankAccountService implements IBankAccountService {
     }
 
     @Override
-    public List<BankAccount> getAllForCurrentUser() {
+    public List<BankAccount> getPaginatedForCurrentUser() {
         return bankAccountRepository.findByUserId(CurrentUserUtils.getCurrentUserId());
     }
 

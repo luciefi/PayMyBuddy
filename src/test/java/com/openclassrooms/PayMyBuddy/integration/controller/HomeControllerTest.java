@@ -1,10 +1,12 @@
 package com.openclassrooms.PayMyBuddy.integration.controller;
 
+import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.controller.UserController;
 import com.openclassrooms.PayMyBuddy.exception.IncorrectCredentialsException;
 import com.openclassrooms.PayMyBuddy.model.LoginDto;
 import com.openclassrooms.PayMyBuddy.service.UserService;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -13,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -25,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 public class HomeControllerTest {
 
     @MockBean
@@ -34,6 +39,7 @@ public class HomeControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @WithMockCustomUser
     public void homeTest() throws Exception {
         when(service.getBalance()).thenReturn(10d);
         mockMvc.perform(get("/"))
@@ -45,6 +51,7 @@ public class HomeControllerTest {
     }
 
     @Test
+    @WithAnonymousUser
     public void homeUnauthenticatedTest() throws Exception {
         try (MockedStatic<CurrentUserUtils> utilities = Mockito.mockStatic(CurrentUserUtils.class)) {
             utilities.when(CurrentUserUtils::getCurrentUserId).thenReturn(null);
@@ -68,6 +75,7 @@ public class HomeControllerTest {
     }
 
     @Test
+    @WithAnonymousUser
     public void loginTest() throws Exception {
         mockMvc.perform(get("/login"))
                 .andDo(print())
@@ -77,35 +85,14 @@ public class HomeControllerTest {
     }
 
     @Test
-    public void loginPostTest() throws Exception {
-        mockMvc.perform(post("/login")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .content("email=abc@de.com&password=password&isRememberMe=false")
-                )
-                .andDo(print())
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/"));
-    }
-
-    @Test
-    public void loginPostFormErrorTest() throws Exception {
-        mockMvc.perform(post("/login")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .content("email=&password=&isRememberMe=false")
-                )
+    @WithMockCustomUser
+    public void loginAuthenticatedTest() throws Exception {
+        when(service.getBalance()).thenReturn(10d);
+        mockMvc.perform(get("/login"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("login"));
-    }
-
-    @Test
-    public void incorrectLoginPostTest() throws Exception {
-        mockMvc.perform(post("/login")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .content("email=abc@de.com&password=password&isRememberMe=false")
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(view().name("login"));
+                .andExpect(view().name("home"))
+                .andExpect(content().string(containsString("Bienvenue sur PayMyBuddy !")));
+        verify(service, Mockito.times(1)).getBalance();
     }
 }

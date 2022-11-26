@@ -21,14 +21,19 @@ public class UserService implements IUserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public Optional<User> getUser(final Long id) {
-        return userRepository.findById(id);
-    } // TODO vérifier si utile
+    public User getUser(final Long id) {
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+    }
 
     @Override
-    public Iterable<User> getUsers() {
+    public User getUserByEmail(final String email) {
+        return userRepository.findByEmailIgnoreCase(email).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public List<User> getUsers() {
         return userRepository.findAll();
-    } // TODO devrait être une liste
+    }
 
     @Override
     public void deleteUser(final Long id) {
@@ -37,7 +42,8 @@ public class UserService implements IUserService {
 
     @Override
     public double getBalance() {
-        User user = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        User user = getUser(CurrentUserUtils.getCurrentUserId());
+        List<User> users = getUsers();
         return user.getBalance();
     }
 
@@ -66,7 +72,7 @@ public class UserService implements IUserService {
 
     @Override
     public User updateUser(UserDto userDto) {
-        User existingUser = userRepository.findByEmailIgnoreCase(userDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        User existingUser = getUserByEmail(userDto.getEmail());
         User user = UserUtils.convertToUser(userDto);
         if (!CurrentUserUtils.getCurrentUserId().equals(existingUser.getId())) {
             throw new EmailAlreadyExistsException();
@@ -80,16 +86,17 @@ public class UserService implements IUserService {
     @Override
     public void updatePassword(PasswordUpdateDto passwordUpdateDto) {
         checkPasswordConfirmation(passwordUpdateDto);
-        User user = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        User user = getUser(CurrentUserUtils.getCurrentUserId());
         encryptPasswords(passwordUpdateDto);
         checkOldPassword(passwordUpdateDto.getOldPassword(), user.getPassword());
         user.setPassword(passwordUpdateDto.getPassword());
         userRepository.save(user);
     }
 
+
     @Override
     public void debitBalance(double amountWithCommission) throws InsufficientBalanceException {
-        User user = userRepository.findById(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        User user = getUser(CurrentUserUtils.getCurrentUserId());
         double balance = user.getBalance();
         if (balance < amountWithCommission) {
             throw new InsufficientBalanceException();
@@ -100,7 +107,7 @@ public class UserService implements IUserService {
 
     @Override
     public void creditBalance(Double amount, Long recipientId) {
-        User user = userRepository.findById(recipientId).orElseThrow(UserNotFoundException::new);
+        User user = getUser(recipientId);
         Double balance = user.getBalance();
         user.setBalance(balance + amount);
         userRepository.save(user);
@@ -108,7 +115,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto getCurrentUserDto() {
-        User user = getUser(CurrentUserUtils.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        User user = getUser(CurrentUserUtils.getCurrentUserId());
         return UserUtils.convertToUserDto(user);
     }
 

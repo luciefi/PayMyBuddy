@@ -7,7 +7,7 @@ import java.util.List;
 public interface IBankAccountService {
     BankAccount getById(Long id);
 
-    List<BankAccount> getAllForCurrentUser();
+    List<BankAccount> getPaginatedForCurrentUser();
 
     void deleteBankAccount(Long id);
 

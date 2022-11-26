@@ -6,7 +6,9 @@ import com.openclassrooms.PayMyBuddy.model.*;
 import java.util.Optional;
 
 public interface IUserService {
-    Optional<User> getUser(Long id);
+    User getUser(Long id);
+
+    User getUserByEmail(String email);
 
     Iterable<User> getUsers();
 

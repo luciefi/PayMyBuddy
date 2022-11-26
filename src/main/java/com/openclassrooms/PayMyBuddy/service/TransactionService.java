@@ -26,6 +26,9 @@ public class TransactionService implements ITransactionService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ContactService contactService;
+
     public static final double COMMISSION_RATE = .005;
 
     @Override
@@ -41,11 +44,16 @@ public class TransactionService implements ITransactionService {
     @Override
     @Transactional
     public void saveTransaction(TransactionDto transactionDto) throws InsufficientBalanceException {
-        User recipient = userRepository.findById(transactionDto.getContactId()).orElseThrow(UserNotFoundException::new);
+        User recipient = userService.getUser(transactionDto.getContactId());
         Transaction transaction = TransactionUtils.convertToTransaction(transactionDto, recipient);
-        double amountWithCommission = transaction.getAmount() * (1 + COMMISSION_RATE);
-        userService.debitBalance(amountWithCommission);
-        userService.creditBalance(transaction.getAmount(), transactionDto.getContactId());
+        updateBalancesAndLastTransactionDate(transaction.getAmount(), transactionDto.getContactId());
         transactionRepository.save(transaction);
+    }
+
+    public void updateBalancesAndLastTransactionDate(Double transactionAmount, Long contactId) throws InsufficientBalanceException {
+        double amountWithCommission = transactionAmount * (1 + TransactionService.COMMISSION_RATE);
+        userService.debitBalance(amountWithCommission);
+        userService.creditBalance(transactionAmount, contactId);
+        contactService.updateLastTransactionDate(contactId);
     }
 }

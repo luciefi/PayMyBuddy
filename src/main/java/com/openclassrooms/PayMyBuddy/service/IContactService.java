@@ -9,4 +9,6 @@ public interface IContactService {
     Iterable<ContactDto> getContacts();
 
     void deleteContact(Long payerRecipientId);
+
+    void updateLastTransactionDate(Long contactId);
 }

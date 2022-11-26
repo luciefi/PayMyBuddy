@@ -8,7 +8,6 @@ public class ContactUtils {
     private ContactUtils(){}
     public static ContactDto convertToContactDto(User user, PayerRecipient payerRecipient){
         ContactDto contactDto = new ContactDto();
-        contactDto.setDateOfCreation(payerRecipient.getDateOfCreation());
         contactDto.setEmail(user.getEmail());
         contactDto.setFirstName(user.getFirstName());
         contactDto.setLastName(user.getLastName());

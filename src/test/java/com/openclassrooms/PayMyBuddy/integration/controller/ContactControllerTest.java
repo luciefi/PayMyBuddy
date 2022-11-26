@@ -1,15 +1,10 @@
 package com.openclassrooms.PayMyBuddy.integration.controller;
 
-import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.ContactCannotBeCurrentUserException;
 import com.openclassrooms.PayMyBuddy.exception.CurrentUserNotFoundException;
 import com.openclassrooms.PayMyBuddy.exception.PayerRecipientAlreadyExistsException;
-import com.openclassrooms.PayMyBuddy.model.BankAccount;
-import com.openclassrooms.PayMyBuddy.model.ContactDto;
-import com.openclassrooms.PayMyBuddy.model.EmailAddress;
-import com.openclassrooms.PayMyBuddy.model.UserDto;
+
 import com.openclassrooms.PayMyBuddy.service.ContactService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +12,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -34,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 class ContactControllerTest {
 
     @MockBean

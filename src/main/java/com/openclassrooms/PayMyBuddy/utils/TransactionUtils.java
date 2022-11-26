@@ -10,7 +10,7 @@ import java.util.Calendar;
 
 public class TransactionUtils {
     private TransactionUtils(){}
-    public static TransactionDto convertToTransactionDto(Transaction transaction) { // TODO passer le current user id en param
+    public static TransactionDto convertToTransactionDto(Transaction transaction) {
         TransactionDto transactionDto = new TransactionDto();
         if (transaction.getPayer().getId().equals(CurrentUserUtils.getCurrentUserId())) {
             transactionDto.setContact(transaction.getRecipient());

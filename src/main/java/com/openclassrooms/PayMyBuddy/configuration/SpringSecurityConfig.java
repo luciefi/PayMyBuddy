@@ -37,10 +37,10 @@ public class SpringSecurityConfig {
                     auth.antMatchers("/").permitAll();
                     auth.antMatchers("/css/style.css").permitAll();
                     auth.antMatchers("/images/img.png").permitAll();
-                    auth.antMatchers("/login").permitAll();
-                    auth.antMatchers(HttpMethod.POST, "/login").permitAll();
+                    auth.antMatchers("/login").anonymous();
+                    auth.antMatchers(HttpMethod.POST, "/login").anonymous();
                     auth.antMatchers("/createProfile").permitAll();
-                    auth.antMatchers(HttpMethod.POST, "/createProfile").permitAll();
+                    auth.antMatchers(HttpMethod.POST, "/createProfile").anonymous();
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(formLogin -> {
