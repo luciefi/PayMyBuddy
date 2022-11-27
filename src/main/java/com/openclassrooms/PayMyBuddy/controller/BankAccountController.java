@@ -6,6 +6,7 @@ import com.openclassrooms.PayMyBuddy.service.IBankAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 public class BankAccountController {
@@ -33,8 +35,8 @@ public class BankAccountController {
     private static final String BANK_ACCOUNT_ACTIVATED_SUCCESS_MESSAGE = "\u2714 \u2007 Le compte bancaire a été activé.";
 
     @GetMapping("/bankAccount")
-    public String bankAccounts(Model model) {
-        addAttributesToModel(model);
+    public String bankAccounts(Model model, @RequestParam(name="page", required=false) Optional<Integer> page) {
+        addAttributesToModel(model, page.orElse(1));
         return "bankAccount";
     }
 
@@ -43,7 +45,7 @@ public class BankAccountController {
                                   RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             logger.info("Cannot update bank account : invalid form");
-            addAttributesToModel(model);
+            addAttributesToModel(model, 1);
             return "bankAccount";
         }
         try {
@@ -55,7 +57,7 @@ public class BankAccountController {
             logger.info("Cannot update bank account : " + e.getMessage());
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
-            addAttributesToModel(model);
+            addAttributesToModel(model,1);
             return "bankAccount";
         }
     }
@@ -64,9 +66,9 @@ public class BankAccountController {
     public String saveNewBankAccount(@Valid BankAccount bankAccount, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if (result.hasErrors()) {
             logger.info("Cannot update bank account : invalid form");
-            Iterable<BankAccount> bankAccounts = service.getPaginatedForCurrentUser();
-            model.addAttribute("bankAccounts", bankAccounts);
-            for (BankAccount bankAccountItem : bankAccounts) {
+            Page<BankAccount> bankAccountPage = service.getPaginatedForCurrentUser(0);
+            model.addAttribute("bankAccountPage", bankAccountPage);
+            for (BankAccount bankAccountItem : bankAccountPage) {
                 model.addAttribute("bankAccount" + bankAccountItem.getId(), bankAccountItem);
             }
             return "bankAccount";
@@ -80,9 +82,9 @@ public class BankAccountController {
             logger.info("Cannot update bank account : " + e.getMessage());
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
-            Iterable<BankAccount> bankAccounts = service.getPaginatedForCurrentUser();
-            model.addAttribute("bankAccounts", bankAccounts);
-            for (BankAccount bankAccountItem : bankAccounts) {
+            Page<BankAccount> bankAccountPage = service.getPaginatedForCurrentUser(0);
+            model.addAttribute("bankAccountPage", bankAccountPage);
+            for (BankAccount bankAccountItem : bankAccountPage) {
                 model.addAttribute("bankAccount" + bankAccountItem.getId(), bankAccountItem);
             }
             return "bankAccount";
@@ -105,10 +107,10 @@ public class BankAccountController {
         return new ModelAndView("redirect:/bankAccount");
     }
 
-    private void addAttributesToModel(Model model) {
-        Iterable<BankAccount> bankAccounts = service.getPaginatedForCurrentUser();
-        model.addAttribute("bankAccounts", bankAccounts);
-        for (BankAccount bankAccount : bankAccounts) {
+    private void addAttributesToModel(Model model, int pageNumber) {
+        Page<BankAccount> bankAccountPage = service.getPaginatedForCurrentUser(Math.max(0,pageNumber - 1));
+        model.addAttribute("bankAccountPage", bankAccountPage);
+        for (BankAccount bankAccount : bankAccountPage) {
             model.addAttribute("bankAccount" + bankAccount.getId(), bankAccount);
         }
         BankAccount bankAccount = new BankAccount();

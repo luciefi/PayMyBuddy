@@ -40,10 +40,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${bankAccounts.empty}">
-                    <td colspan="4">Aucun compte bancaire enregistré</td>
+                <tr th:if="${bankAccountPage.empty}">
+                    <td colspan="4">Aucun compte bancaire</td>
                 </tr>
-                <tr th:each="bankAccount: ${bankAccounts}">
+                <tr th:each="bankAccount: ${bankAccountPage}">
                     <td><span th:text="${bankAccount.name}"></span></td>
                     <td><span th:text="${bankAccount.iban}"></span></td>
                     <td><span th:text="${bankAccount.bic}"></span></td>
@@ -63,17 +63,36 @@
                             Réactiver
                         </button>
                     </td>
-
                 </tr>
                 </tbody>
             </table>
         </div>
+        <nav aria-label="Page navigation" th:if="${bankAccountPage.totalPages > 1}">
+            <ul class="pagination m-2 justify-content-center">
+                <li class="page-item" th:if="${bankAccountPage.number > 0}">
+                    <a class="page-link" th:href="@{/bankAccount(page=${bankAccountPage.number})}">
+                        &#171;
+                    </a>
+                </li>
+                <li th:attr="class=${pageNumber == (bankAccountPage.number + 1) ? 'active page-item' : 'page-item'}"
+                    th:each="pageNumber:${#numbers.sequence(1, bankAccountPage.totalPages)}">
+                    <a th:href="@{/bankAccount(page=${pageNumber})}"
+                       th:text=${pageNumber}
+                       class="page-link"></a>
+                </li>
+                <li th:if="${bankAccountPage.number < bankAccountPage.totalPages - 1}" class="page-item">
+                    <a class="page-link" th:href="@{/bankAccount(page=${bankAccountPage.number + 2})}">
+                        &#187;
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
 
 
 <!-- Modal de désactivation-->
-<div class="modal fade" th:each="bankAccount : ${bankAccounts}" th:attr="id=${'deleteModal'+bankAccount.id}" tabindex="-1">
+<div class="modal fade" th:each="bankAccount : ${bankAccountPage}" th:attr="id=${'deleteModal'+bankAccount.id}" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -96,7 +115,7 @@
 </div>
 
 <!-- Modal de réactivation-->
-<div class="modal fade" th:each="bankAccount : ${bankAccounts}" th:attr="id=${'reactivateModal'+bankAccount.id}" tabindex="-1">
+<div class="modal fade" th:each="bankAccount : ${bankAccountPage}" th:attr="id=${'reactivateModal'+bankAccount.id}" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -169,6 +188,11 @@
                             keyboard: false
                         })
                         myModal.show();
+
+
+
+
+
                     </script>
                 </div>
             </form>
@@ -177,7 +201,7 @@
 </div>
 
 <!-- Modal de modification d'un compte for-->
-<div th:each="bankAccount : ${bankAccounts}" class="modal fade" th:attr="id=${'updateModal'+ bankAccount.id}"
+<div th:each="bankAccount : ${bankAccountPage}" class="modal fade" th:attr="id=${'updateModal'+ bankAccount.id}"
      tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

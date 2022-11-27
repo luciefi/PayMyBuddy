@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,6 +36,7 @@ public class BankAccountControllerTest {
 
     @Test
     public void getBankAccountsTest() throws Exception {
+        when(bankAccountService.getPaginatedForCurrentUser(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(get("/bankAccount"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -57,6 +58,7 @@ public class BankAccountControllerTest {
 
     @Test
     public void createBankAccountPostFormErrorTest() throws Exception {
+        when(bankAccountService.getPaginatedForCurrentUser(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/createBankAccount")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("name=&iban=&bic=")
@@ -70,6 +72,7 @@ public class BankAccountControllerTest {
     @Test
     public void createBankAccountPostAlreadyExistsTest() throws Exception {
         when(bankAccountService.saveBankAccount(any(BankAccount.class))).thenThrow(new BankAccountAlreadyExistsException());
+        when(bankAccountService.getPaginatedForCurrentUser(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/createBankAccount")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("name=compte&iban=2123456677899000&bic=12390003")
@@ -94,6 +97,7 @@ public class BankAccountControllerTest {
 
     @Test
     public void updateBankAccountPostFormErrorTest() throws Exception {
+        when(bankAccountService.getPaginatedForCurrentUser(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/updateBankAccount/1")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("name=&iban=&bic=")
@@ -107,6 +111,7 @@ public class BankAccountControllerTest {
     @Test
     public void updateBankAccountPostAlreadyExistsTest() throws Exception {
         when(bankAccountService.saveBankAccount(any(BankAccount.class))).thenThrow(new BankAccountAlreadyExistsException());
+        when(bankAccountService.getPaginatedForCurrentUser(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/updateBankAccount/1")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("name=compte&iban=2123456677899000&bic=12390003")

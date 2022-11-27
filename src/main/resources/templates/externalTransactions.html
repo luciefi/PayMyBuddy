@@ -53,6 +53,26 @@
                 </tbody>
             </table>
         </div>
+        <nav aria-label="Page navigation" th:if="${externalTransactions.totalPages > 1}">
+            <ul class="pagination m-2 justify-content-center">
+                <li class="page-item" th:if="${externalTransactions.number > 0}">
+                    <a class="page-link" th:href="@{/externalTransaction(page=${externalTransactions.number})}">
+                        &#171;
+                    </a>
+                </li>
+                <li th:attr="class=${pageNumber == (externalTransactions.number + 1) ? 'active page-item' : 'page-item'}"
+                    th:each="pageNumber:${#numbers.sequence(1, externalTransactions.totalPages)}">
+                    <a th:href="@{/externalTransaction(page=${pageNumber})}"
+                       th:text=${pageNumber}
+                       class="page-link"></a>
+                </li>
+                <li th:if="${externalTransactions.number < externalTransactions.totalPages - 1}" class="page-item">
+                    <a class="page-link" th:href="@{/externalTransaction(page=${externalTransactions.number + 2})}">
+                        &#187;
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
 
@@ -126,6 +146,7 @@
                             keyboard: false
                         })
                         myModal.show();
+
 
 
                     </script>

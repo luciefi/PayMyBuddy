@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -54,14 +56,14 @@ class BankAccountServiceTest {
 
     @Test
     @WithMockCustomUser
-    void getBankAccountsTest() {
+    void getPaginatedForCurrentUserTest() {
         // ARRANGE
-        when(bankAccountRepository.findByUserId(anyLong())).thenReturn(Collections.singletonList(new BankAccount()));
+        when(bankAccountRepository.findByUserId(anyLong(), any(Pageable.class))).thenReturn(Page.empty());
 
         // ACT - ASSERT
-        List<BankAccount> bankAccountList = bankAccountService.getPaginatedForCurrentUser();
-        assertEquals(1, bankAccountList.size());
-        verify(bankAccountRepository, times(1)).findByUserId(anyLong());
+        Page<BankAccount> bankAccounts = bankAccountService.getPaginatedForCurrentUser(1);
+        assertNotNull(bankAccounts);
+        verify(bankAccountRepository, times(1)).findByUserId(anyLong(), any(Pageable.class));
     }
 
     @Test

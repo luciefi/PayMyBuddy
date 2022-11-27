@@ -8,6 +8,9 @@ import com.openclassrooms.PayMyBuddy.repository.ExternalTransactionRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import com.openclassrooms.PayMyBuddy.utils.ExternalTransactionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class ExternalTransactionService implements IExternalTransactionService {
 
+    private static final int EXTERNAL_TRANSACTION_PAGE_SIZE = 5;
     @Autowired
     private ExternalTransactionRepository externalTransactionRepository;
 
@@ -48,14 +52,17 @@ public class ExternalTransactionService implements IExternalTransactionService {
     }
 
     @Override
-    public List<ExternalTransaction> getAll() {
-        return externalTransactionRepository.findByUserId(CurrentUserUtils.getCurrentUserId());
+    public Page<ExternalTransaction> getAll(int pageNumber) {
+        int startItem = pageNumber * EXTERNAL_TRANSACTION_PAGE_SIZE;
+        Pageable pageable = PageRequest.of(pageNumber, EXTERNAL_TRANSACTION_PAGE_SIZE);
+        return externalTransactionRepository.findByUserId(CurrentUserUtils.getCurrentUserId(), pageable);
     }
 
     @Override
-    public List<ExternalTransactionDto> getAllDto() {
-        List<ExternalTransaction> externalTransactionList = getAll();
-        List<ExternalTransactionDto> externalTransactionDtos = externalTransactionList.stream().map(externalTransaction -> ExternalTransactionUtils.convertToExternalTransactionDto(externalTransaction)).collect(Collectors.toList());
+    public Page<ExternalTransactionDto> getAllDto(int pageNumber) {
+        Page<ExternalTransaction> externalTransactionList = getAll(pageNumber);
+        Page<ExternalTransactionDto> externalTransactionDtos =
+                externalTransactionList.map(ExternalTransactionUtils::convertToExternalTransactionDto);
         return externalTransactionDtos;
     }
 }

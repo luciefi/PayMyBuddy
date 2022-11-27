@@ -74,6 +74,8 @@ class ContactServiceTest {
         verify(userService, Mockito.times(1)).getUser(anyLong());
     }
 
+    // TODO test pagination
+
     @Test
     void saveContact() {
         // Arrange

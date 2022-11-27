@@ -2,7 +2,6 @@ package com.openclassrooms.PayMyBuddy.service;
 
 import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
-import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.Transaction;
 import com.openclassrooms.PayMyBuddy.model.TransactionDto;
 import com.openclassrooms.PayMyBuddy.model.User;
@@ -13,13 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -46,7 +46,6 @@ class TransactionServiceTest {
 
     @Test
     void getAll() {
-
         // Arrange
         User user1 = new User();
         user1.setId(1L);
@@ -67,13 +66,14 @@ class TransactionServiceTest {
         transaction2.setAmount(2d);
         transactionList.add(transaction2);
 
-        when(transactionRepository.findByPayerIdOrRecipientIdOrderByTimestampDesc(anyLong(), anyLong())).thenReturn(transactionList);
+        when(transactionRepository.findByPayerIdOrRecipientIdOrderByTimestampDesc(anyLong(), anyLong(), any(Pageable.class))).thenReturn(new PageImpl<>(transactionList));
 
         // Act
-        List<TransactionDto> transactionDtos = transactionService.getAll();
+        Page<TransactionDto> transactionDtos = transactionService.getAllPaginated(1);
 
         // Assert
-        assertEquals(2, transactionDtos.size());
+        assertNotNull(transactionDtos);
+        assertEquals(2, transactionDtos.getNumberOfElements());
     }
 
     @Test

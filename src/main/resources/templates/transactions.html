@@ -82,13 +82,33 @@
                     <td colspan="3">Aucun virement effectué ou reçu.</td>
                 </tr>
                 <tr th:each="transaction: ${transactions}">
-                    <td><span th:text="${transaction.contact.firstName + ' ' + transaction.contact.firstName}"></span></td>
+                    <td><span th:text="${transaction.contact.firstName + ' ' + transaction.contact.lastName}"></span></td>
                     <td><span th:text="${transaction.description}"> </span></td>
                     <td><span th:text="${transaction.amount}"> </span></td>
                 </tr>
                 </tbody>
             </table>
         </div>
+        <nav aria-label="Page navigation" th:if="${transactions.totalPages > 1}">
+            <ul class="pagination m-2 justify-content-center">
+                <li class="page-item" th:if="${transactions.number > 0}">
+                    <a class="page-link" th:href="@{/transaction(page=${transactions.number})}">
+                        &#171;
+                    </a>
+                </li>
+                <li th:attr="class=${pageNumber == (transactions.number + 1) ? 'active page-item' : 'page-item'}"
+                    th:each="pageNumber:${#numbers.sequence(1, transactions.totalPages)}">
+                    <a th:href="@{/transaction(page=${pageNumber})}"
+                       th:text=${pageNumber}
+                       class="page-link"></a>
+                </li>
+                <li th:if="${transactions.number < transactions.totalPages - 1}" class="page-item">
+                    <a class="page-link" th:href="@{/transaction(page=${transactions.number + 2})}">
+                        &#187;
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
 

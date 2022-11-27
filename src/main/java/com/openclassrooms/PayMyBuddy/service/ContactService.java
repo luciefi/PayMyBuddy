@@ -6,6 +6,9 @@ import com.openclassrooms.PayMyBuddy.repository.PayerRecipientRepository;
 import com.openclassrooms.PayMyBuddy.utils.ContactUtils;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -16,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ContactService implements IContactService {
+
+    private static final int CONTACT_PAGE_SIZE = 5;
     @Autowired
     private UserService userService;
 
@@ -23,7 +28,20 @@ public class ContactService implements IContactService {
     private PayerRecipientRepository payerRecipientRepository;
 
     @Override
-    public Iterable<ContactDto> getContacts() {
+    public Page<ContactDto> getPaginatedContacts(int pageNumber) {
+        Long currentUserId = CurrentUserUtils.getCurrentUserId();
+        int startItem = pageNumber * CONTACT_PAGE_SIZE;
+        Pageable pageable = PageRequest.of(pageNumber, CONTACT_PAGE_SIZE);
+        Page<PayerRecipient> contacts = payerRecipientRepository.findByPayerIdAndDeleted(currentUserId, false, pageable);
+        Page<ContactDto> contactDtoList = contacts.map(payerRecipient -> {
+            User user = userService.getUser(payerRecipient.getRecipient().getId());
+            return ContactUtils.convertToContactDto(user, payerRecipient);
+        });
+        return contactDtoList;
+    }
+
+    @Override
+    public List<ContactDto> getContacts() {
         Long currentUserId = CurrentUserUtils.getCurrentUserId();
         List<PayerRecipient> contacts = payerRecipientRepository.findByPayerIdAndDeleted(currentUserId, false);
         List<ContactDto> contactDtoList = contacts.stream().map(payerRecipient -> {

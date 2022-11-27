@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,13 +45,14 @@ class TransactionControllerTest {
 
     @Test
     void transactions() throws Exception {
+        when(service.getAllPaginated(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(get("/transaction"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("transactions"))
                 .andExpect(content().string(containsString("Ajouter un contact")))
                 .andExpect(content().string(containsString("Mes virements")));
-        verify(service, times(1)).getAll();
+        verify(service, times(1)).getAllPaginated(anyInt());
         verify(contactService, times(1)).getContacts();
     }
 
@@ -58,9 +60,8 @@ class TransactionControllerTest {
     @Test
     void saveNewTransaction() throws Exception {
         when(contactService.getContacts()).thenReturn(Collections.singletonList(new ContactDto()));
-        when(service.getAll()).thenReturn(Collections.emptyList());
         mockMvc.perform(post("/transaction").contentType(MediaType.APPLICATION_FORM_URLENCODED).content("accountId=3&amount=2&description=test")).andDo(print()).andExpect(status().isFound()).andExpect(view().name("redirect:/transaction"));
-        verify(service, Mockito.never()).getAll();
+        verify(service, Mockito.never()).getAllPaginated(anyInt());
         verify(service, Mockito.times(1)).saveTransaction(any(TransactionDto.class));
         verify(contactService, never()).getContacts();
     }
@@ -68,9 +69,9 @@ class TransactionControllerTest {
     @Test
     void saveNewTransactionFormError() throws Exception {
         when(contactService.getContacts()).thenReturn(Collections.singletonList(new ContactDto()));
-        when(service.getAll()).thenReturn(Collections.emptyList());
+        when(service.getAllPaginated(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/transaction").contentType(MediaType.APPLICATION_FORM_URLENCODED).content("contactId=&amount=&description=test")).andDo(print()).andExpect(status().isOk()).andExpect(view().name("transactions"));
-        verify(service, Mockito.times(1)).getAll();
+        verify(service, Mockito.times(1)).getAllPaginated(anyInt());
         verify(service, Mockito.never()).saveTransaction(any(TransactionDto.class));
         verify(contactService, times(1)).getContacts();
     }
@@ -79,9 +80,9 @@ class TransactionControllerTest {
     void saveNewTransactionUserNotFoundException() throws Exception {
         doThrow(new UserNotFoundException()).when(service).saveTransaction(any(TransactionDto.class));
         when(contactService.getContacts()).thenReturn(Collections.singletonList(new ContactDto()));
-        when(service.getAll()).thenReturn(Collections.emptyList());
+        when(service.getAllPaginated(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/transaction").contentType(MediaType.APPLICATION_FORM_URLENCODED).content("accountId=3&amount=2&description=test")).andDo(print()).andExpect(status().isOk()).andExpect(view().name("transactions")).andExpect(content().string(containsString("L&#39;utilisateur n&#39;a pas pu être trouvé")));
-        verify(service, Mockito.times(1)).getAll();
+        verify(service, Mockito.times(1)).getAllPaginated(anyInt());
         verify(service, Mockito.times(1)).saveTransaction(any(TransactionDto.class));
         verify(contactService, times(1)).getContacts();
     }
@@ -90,9 +91,9 @@ class TransactionControllerTest {
     void saveNewTransactionInsufficientBalanceException() throws Exception {
         doThrow(new InsufficientBalanceException()).when(service).saveTransaction(any(TransactionDto.class));
         when(contactService.getContacts()).thenReturn(Collections.singletonList(new ContactDto()));
-        when(service.getAll()).thenReturn(Collections.emptyList());
+        when(service.getAllPaginated(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/transaction").contentType(MediaType.APPLICATION_FORM_URLENCODED).content("accountId=3&amount=2&description=test")).andDo(print()).andExpect(status().isOk()).andExpect(view().name("transactions")).andExpect(content().string(containsString("Le solde est insuffisant.")));
-        verify(service, Mockito.times(1)).getAll();
+        verify(service, Mockito.times(1)).getAllPaginated(anyInt());
         verify(service, Mockito.times(1)).saveTransaction(any(TransactionDto.class));
         verify(contactService, times(1)).getContacts();
     }

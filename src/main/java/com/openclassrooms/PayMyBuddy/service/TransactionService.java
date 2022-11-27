@@ -8,6 +8,9 @@ import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import com.openclassrooms.PayMyBuddy.utils.TransactionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class TransactionService implements ITransactionService {
+
+    private static final int TRANSACTION_PAGE_SIZE = 5;
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -32,13 +37,12 @@ public class TransactionService implements ITransactionService {
     public static final double COMMISSION_RATE = .005;
 
     @Override
-    public List<TransactionDto> getAll() {
-        List<Transaction> transactions = transactionRepository.findByPayerIdOrRecipientIdOrderByTimestampDesc(CurrentUserUtils.getCurrentUserId(),
-                CurrentUserUtils.getCurrentUserId());
-        return transactions
-                .stream()
-                .map(TransactionUtils::convertToTransactionDto)
-                .collect(Collectors.toList());
+    public Page<TransactionDto> getAllPaginated(int pageNumber) {
+        int startItem = pageNumber * TRANSACTION_PAGE_SIZE;
+        Pageable pageable = PageRequest.of(pageNumber, TRANSACTION_PAGE_SIZE);
+        Page<Transaction> transactions = transactionRepository.findByPayerIdOrRecipientIdOrderByTimestampDesc(CurrentUserUtils.getCurrentUserId(),
+                CurrentUserUtils.getCurrentUserId(), pageable);
+        return transactions.map(TransactionUtils::convertToTransactionDto);
     }
 
     @Override

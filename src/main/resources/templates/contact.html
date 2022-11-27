@@ -59,7 +59,7 @@
                 </thead>
                 <tbody>
                 <tr th:if="${contacts.empty}">
-                    <td colspan="3">Aucun contact enregistré</td>
+                    <td colspan="3">Aucun contact</td>
                 </tr>
                 <tr th:each="contact: ${contacts}">
                     <td><span th:text="${contact.firstName}"> Prénom </span></td>
@@ -75,6 +75,28 @@
                 </tbody>
             </table>
         </div>
+
+        <nav aria-label="Page navigation" th:if="${contacts.totalPages > 1}">
+            <ul class="pagination m-2 justify-content-center">
+                <li class="page-item" th:if="${contacts.number > 0}">
+                    <a class="page-link" th:href="@{/contact(page=${contacts.number})}">
+                        &#171;
+                    </a>
+                </li>
+                <li th:attr="class=${pageNumber == (contacts.number + 1) ? 'active page-item' : 'page-item'}"
+                    th:each="pageNumber:${#numbers.sequence(1, contacts.totalPages)}">
+                    <a th:href="@{/contact(page=${pageNumber})}"
+                       th:text=${pageNumber}
+                       class="page-link"></a>
+                </li>
+                <li th:if="${contacts.number < contacts.totalPages - 1}" class="page-item">
+                    <a class="page-link" th:href="@{/contact(page=${contacts.number + 2})}">
+                        &#187;
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
     </div>
 </div>
 <!-- Modal -->

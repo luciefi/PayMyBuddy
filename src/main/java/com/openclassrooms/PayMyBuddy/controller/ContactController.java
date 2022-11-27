@@ -16,10 +16,12 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 public class ContactController {
@@ -32,8 +34,9 @@ public class ContactController {
     public static final String ADD_CONTACT_SUCCESS_MESSAGE = "\u2714 \u2007 Le contact a été ajouté !";
 
     @GetMapping("/contact")
-    public String contacts(Model model) {
-        Iterable<ContactDto> contacts = service.getContacts();
+    public String contacts(Model model, @RequestParam(name="page", required=false) Optional<Integer> page) {
+        int pageNumber = page.orElse(1);
+        Iterable<ContactDto> contacts = service.getPaginatedContacts(Math.max(0,pageNumber - 1));
         model.addAttribute("contacts", contacts);
         EmailAddress emailAddress = new EmailAddress();
         model.addAttribute("emailAddress", emailAddress);
@@ -44,7 +47,7 @@ public class ContactController {
     public String createContact(@Valid EmailAddress emailAddress, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             logger.info("Cannot create contact : invalid form");
-            Iterable<ContactDto> contacts = service.getContacts();
+            Iterable<ContactDto> contacts = service.getPaginatedContacts(0);
             model.addAttribute("contacts", contacts);
             return "contact";
         }
@@ -57,7 +60,7 @@ public class ContactController {
             logger.info("Cannot create contact :" + e.getMessage());
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
-            Iterable<ContactDto> contacts = service.getContacts();
+            Iterable<ContactDto> contacts = service.getPaginatedContacts(0);
             model.addAttribute("contacts", contacts);
             return "contact";
         }

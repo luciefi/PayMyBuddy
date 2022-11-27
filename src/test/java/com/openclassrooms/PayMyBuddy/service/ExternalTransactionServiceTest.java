@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -89,43 +91,26 @@ class ExternalTransactionServiceTest {
     void getAll() {
         // ARRANGE
         ExternalTransaction externalTransaction = new ExternalTransaction();
-        when(externalTransactionRepository.findByUserId(anyLong())).thenReturn(Collections.singletonList(externalTransaction));
+        when(externalTransactionRepository.findByUserId(anyLong(), any(Pageable.class))).thenReturn(Page.empty());
 
         // ACT
-        List<ExternalTransaction> externalTransactionList = externalTransactionService.getAll();
+        Page<ExternalTransaction> externalTransactionList = externalTransactionService.getAll(1);
 
         // ASSERT
-        assertEquals(1, externalTransactionList.size());
-        assertEquals(externalTransaction, externalTransactionList.get(0));
-        verify(externalTransactionRepository, Mockito.times(1)).findByUserId(any(Long.class));
+        assertNotNull(externalTransactionList);
+        verify(externalTransactionRepository, Mockito.times(1)).findByUserId(any(Long.class), any(Pageable.class));
     }
 
     @Test
     void getAllDto() {
         // ARRANGE
-        ExternalTransaction externalTransaction = new ExternalTransaction();
-        externalTransaction.setTransactionType(TransactionType.CREDIT_EXTERNAL_ACCOUNT);
-        externalTransaction.setAmount(1d);
-        externalTransaction.setDescription("test");
-        BankAccount bankAccount = new BankAccount();
-        bankAccount.setId(1L);
-        bankAccount.setName("my bank account");
-        externalTransaction.setBankAccount(bankAccount);
-        externalTransaction.setTimestamp(new Timestamp(0));
-        when(externalTransactionRepository.findByUserId(anyLong())).thenReturn(Collections.singletonList(externalTransaction));
+        when(externalTransactionRepository.findByUserId(anyLong(), any(Pageable.class))).thenReturn(Page.empty());
 
         // ACT
-        List<ExternalTransactionDto> externalTransactionDtos = externalTransactionService.getAllDto();
+        Page<ExternalTransactionDto> externalTransactionDtos = externalTransactionService.getAllDto(1);
 
         // ASSERT
-        assertEquals(1, externalTransactionDtos.size());
-        assertEquals(externalTransaction.getTransactionType().getValue() + "", externalTransactionDtos.get(0).getTransactionType());
-        assertEquals(externalTransaction.getAmount(), externalTransactionDtos.get(0).getAmount());
-        assertEquals(externalTransaction.getDescription(), externalTransactionDtos.get(0).getDescription());
-        assertEquals(externalTransaction.getBankAccount().getId(), externalTransactionDtos.get(0).getBankAccountId());
-        assertEquals(externalTransaction.getBankAccount().getId(), externalTransactionDtos.get(0).getBankAccount().getId());
-        assertEquals(externalTransaction.getBankAccount().getName(), externalTransactionDtos.get(0).getBankAccount().getName());
-        assertEquals(externalTransaction.getTimestamp(), externalTransactionDtos.get(0).getTimestamp());
-        verify(externalTransactionRepository, Mockito.times(1)).findByUserId(any(Long.class));
+        assertNotNull(externalTransactionDtos);
+        verify(externalTransactionRepository, Mockito.times(1)).findByUserId(any(Long.class), any(Pageable.class));
     }
 }

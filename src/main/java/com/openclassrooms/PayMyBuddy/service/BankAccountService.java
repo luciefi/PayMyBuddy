@@ -7,15 +7,20 @@ import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.openclassrooms.PayMyBuddy.repository.BankAccountRepository;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class BankAccountService implements IBankAccountService {
+    private static final int BANK_ACCOUNT_PAGE_SIZE = 5;
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
@@ -28,8 +33,11 @@ public class BankAccountService implements IBankAccountService {
     }
 
     @Override
-    public List<BankAccount> getPaginatedForCurrentUser() {
-        return bankAccountRepository.findByUserId(CurrentUserUtils.getCurrentUserId());
+    public Page<BankAccount> getPaginatedForCurrentUser(int pageNumber) {
+        int startItem = pageNumber * BANK_ACCOUNT_PAGE_SIZE;
+        Pageable pageable = PageRequest.of(pageNumber, BANK_ACCOUNT_PAGE_SIZE);
+        Page<BankAccount> bankAccounts = bankAccountRepository.findByUserId(CurrentUserUtils.getCurrentUserId(), pageable);
+        return bankAccounts;
     }
 
     @Override

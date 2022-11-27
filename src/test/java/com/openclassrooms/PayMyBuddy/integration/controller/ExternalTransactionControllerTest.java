@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -46,12 +47,13 @@ class ExternalTransactionControllerTest {
 
     @Test
     void externalTransactions() throws Exception {
+        when(service.getAllDto(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(get("/externalTransaction"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("externalTransactions"))
                 .andExpect(content().string(containsString("Mes virements vers mon compte bancaire")));
-        verify(service, times(1)).getAllDto();
+        verify(service, times(1)).getAllDto(anyInt());
     }
 
     @Test
@@ -65,7 +67,7 @@ class ExternalTransactionControllerTest {
                 .andExpect(view().name("redirect:/externalTransaction"));
         verify(service, Mockito.times(1)).saveExternalTransaction(any(ExternalTransactionDto.class));
         verify(userService, never()).getBalance();
-        verify(bankAccountService, never()).getPaginatedForCurrentUser();
+        verify(bankAccountService, never()).getPaginatedForCurrentUser(1);
     }
 
     @Test
@@ -73,6 +75,7 @@ class ExternalTransactionControllerTest {
         BankAccount bankAccount = new BankAccount();
         bankAccount.setDeactivated(false);
         when(bankAccountService.getAllActiveForCurrentUser()).thenReturn(Collections.singletonList(bankAccount));
+        when(service.getAllDto(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/newExternalTransaction")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("bankAccountId=&transactionType=&amount=&description=test")
@@ -92,6 +95,7 @@ class ExternalTransactionControllerTest {
         BankAccount bankAccount = new BankAccount();
         bankAccount.setDeactivated(false);
         when(bankAccountService.getAllActiveForCurrentUser()).thenReturn(Collections.singletonList(bankAccount));
+        when(service.getAllDto(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/newExternalTransaction")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("bankAccountId=3&transactionType=0&amount=2&description=test")
@@ -108,9 +112,11 @@ class ExternalTransactionControllerTest {
     @Test
     void saveNewExternalTransactionInsufficientBalanceException() throws Exception {
         doThrow(new InsufficientBalanceException()).when(service).saveExternalTransaction(any(ExternalTransactionDto.class));
+        when(service.getAllDto(anyInt())).thenReturn(Page.empty());
         BankAccount bankAccount = new BankAccount();
         bankAccount.setDeactivated(false);
         when(bankAccountService.getAllActiveForCurrentUser()).thenReturn(Collections.singletonList(bankAccount));
+        when(service.getAllDto(anyInt())).thenReturn(Page.empty());
         mockMvc.perform(post("/newExternalTransaction")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("bankAccountId=3&transactionType=0&amount=2&description=test")
