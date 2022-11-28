@@ -38,7 +38,6 @@ public class TransactionService implements ITransactionService {
 
     @Override
     public Page<TransactionDto> getAllPaginated(int pageNumber) {
-        int startItem = pageNumber * TRANSACTION_PAGE_SIZE;
         Pageable pageable = PageRequest.of(pageNumber, TRANSACTION_PAGE_SIZE);
         Page<Transaction> transactions = transactionRepository.findByPayerIdOrRecipientIdOrderByTimestampDesc(CurrentUserUtils.getCurrentUserId(),
                 CurrentUserUtils.getCurrentUserId(), pageable);

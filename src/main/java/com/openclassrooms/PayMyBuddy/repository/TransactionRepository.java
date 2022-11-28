@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    public Page<Transaction> findByPayerIdOrRecipientIdOrderByTimestampDesc(Long payerId, Long recipientId, Pageable pageable);
+    Page<Transaction> findByPayerIdOrRecipientIdOrderByTimestampDesc(Long payerId, Long recipientId, Pageable pageable);
 }

@@ -6,11 +6,6 @@ import com.openclassrooms.PayMyBuddy.model.UserDto;
 
 public class UserUtils {
     private UserUtils(){}
-    public static User convertToUser(ProfileDto profileDto) {
-        User user = convertToUser(profileDto.getUserDto());
-        user.setPassword(profileDto.getPasswordDto().getPassword());
-        return user;
-    }
 
     public static User convertToUser(UserDto userDto) {
         User user = new User();

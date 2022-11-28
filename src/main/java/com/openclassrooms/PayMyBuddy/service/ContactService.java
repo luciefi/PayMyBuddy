@@ -33,11 +33,10 @@ public class ContactService implements IContactService {
         int startItem = pageNumber * CONTACT_PAGE_SIZE;
         Pageable pageable = PageRequest.of(pageNumber, CONTACT_PAGE_SIZE);
         Page<PayerRecipient> contacts = payerRecipientRepository.findByPayerIdAndDeleted(currentUserId, false, pageable);
-        Page<ContactDto> contactDtoList = contacts.map(payerRecipient -> {
+        return contacts.map(payerRecipient -> {
             User user = userService.getUser(payerRecipient.getRecipient().getId());
             return ContactUtils.convertToContactDto(user, payerRecipient);
         });
-        return contactDtoList;
     }
 
     @Override
@@ -74,8 +73,7 @@ public class ContactService implements IContactService {
     }
 
     private Optional<PayerRecipient> getExistingContact(User payer, User recipient) {
-        Optional<PayerRecipient> payerRecipient = payerRecipientRepository.findByPayerIdAndRecipientIdAndDeleted(payer.getId(), recipient.getId(), false);
-        return payerRecipient;
+        return payerRecipientRepository.findByPayerIdAndRecipientIdAndDeleted(payer.getId(), recipient.getId(), false);
     }
 
     @Override

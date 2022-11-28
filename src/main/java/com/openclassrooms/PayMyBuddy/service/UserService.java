@@ -59,7 +59,7 @@ public class UserService implements IUserService {
     @Override
     public User saveNewUser(ProfileDto profileDto) {
         checkPasswordConfirmation(profileDto.getPasswordDto());
-        User user = UserUtils.convertToUser(profileDto);
+        User user = UserUtils.convertToUser(profileDto.getUserDto());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Optional<User> sameEmailUser = userRepository.findByEmailIgnoreCase(user.getEmail());
         if (sameEmailUser.isPresent()) {
@@ -87,9 +87,9 @@ public class UserService implements IUserService {
     public void updatePassword(PasswordUpdateDto passwordUpdateDto) {
         checkPasswordConfirmation(passwordUpdateDto);
         User user = getUser(CurrentUserUtils.getCurrentUserId());
-        encryptPasswords(passwordUpdateDto);
-        checkOldPassword(passwordUpdateDto.getOldPassword(), user.getPassword());
-        user.setPassword(passwordUpdateDto.getPassword());
+        PasswordUpdateDto encryptedPasswordUpdateDto = encryptPasswords(passwordUpdateDto);
+        checkOldPassword(encryptedPasswordUpdateDto.getOldPassword(), user.getPassword());
+        user.setPassword(encryptedPasswordUpdateDto.getPassword());
         userRepository.save(user);
     }
 
@@ -131,9 +131,11 @@ public class UserService implements IUserService {
         }
     }
 
-    private void encryptPasswords(PasswordUpdateDto passwordUpdateDto) {
-        passwordUpdateDto.setOldPassword(passwordEncoder.encode(passwordUpdateDto.getOldPassword()));
-        passwordUpdateDto.setPassword(passwordEncoder.encode(passwordUpdateDto.getPassword()));
+    private PasswordUpdateDto encryptPasswords(PasswordUpdateDto passwordUpdateDto) {
+        PasswordUpdateDto encryptedPasswordUpdateDto = new PasswordUpdateDto();
+        encryptedPasswordUpdateDto.setOldPassword(passwordEncoder.encode(passwordUpdateDto.getOldPassword()));
+        encryptedPasswordUpdateDto.setPassword(passwordEncoder.encode(passwordUpdateDto.getPassword()));
+        return encryptedPasswordUpdateDto;
     }
 
 }

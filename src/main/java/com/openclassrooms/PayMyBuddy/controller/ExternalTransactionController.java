@@ -48,22 +48,22 @@ public class ExternalTransactionController {
 
     @PostMapping("/newExternalTransaction")
     public String saveNewExternalTransaction(@Valid ExternalTransactionDto externalTransactionDto, BindingResult result, Model model,
-                                             RedirectAttributes redirectAttributes) {
+                                             RedirectAttributes redirectAttributes, @RequestParam(name="page", required=false) Optional<Integer> page) {
         if (result.hasErrors()) {
             logger.info("Cannot save external transaction : invalid form");
-            addAttributesToModel(model, 1);
+            addAttributesToModel(model, page.orElse(1));
             return "externalTransactions";
         }
         try {
             service.saveExternalTransaction(externalTransactionDto);
             logger.info("External transaction saved");
             redirectAttributes.addFlashAttribute("message", NEW_TRANSACTION_SUCCESS_MESSAGE);
-            return "redirect:/externalTransaction";
+            return page.map(integer -> "redirect:/externalTransaction?page=" + integer).orElse("redirect:/externalTransaction");
         } catch (BankAccountNotFoundException | InsufficientBalanceException e) {
             logger.info("Cannot save external transaction : " + e.getMessage());
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
-            addAttributesToModel(model, 1);
+            addAttributesToModel(model, page.orElse(1));
             return "externalTransactions";
         }
     }

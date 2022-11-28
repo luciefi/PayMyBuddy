@@ -26,7 +26,7 @@
         </div>
         <div class="bg-light p-3 mb-3 mt-2" th:unless="${contacts.empty}">
             <form method="post"
-                  th:action="@{/transaction}" th:object="${transactionDto}">
+                  th:action="@{/transaction(page=${transactions.number+1})}" th:object="${transactionDto}">
                 <div class="alert alert-danger text-danger pb-0" th:if="${#fields.hasErrors('global')}">
                     <ul>
                         <li th:each="err : ${#fields.errors('global')}"><small th:text="${err}"></small></li>
@@ -78,7 +78,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${transactions.empty}">
+                <tr th:if="${transactions.totalElements == 0}">
                     <td colspan="3">Aucun virement effectué ou reçu.</td>
                 </tr>
                 <tr th:each="transaction: ${transactions}">

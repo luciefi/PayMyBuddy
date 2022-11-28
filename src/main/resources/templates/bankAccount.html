@@ -40,8 +40,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${bankAccountPage.empty}">
-                    <td colspan="4">Aucun compte bancaire</td>
+                <tr th:if="${bankAccountPage.totalElements == 0}">
+                    <td colspan="4">Aucun compte bancaire enregistré</td>
                 </tr>
                 <tr th:each="bankAccount: ${bankAccountPage}">
                     <td><span th:text="${bankAccount.name}"></span></td>
@@ -106,7 +106,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <a th:href="@{/deleteBankAccount/{id}(id=${bankAccount.id})}">
+                <a th:href="@{/deleteBankAccount/{id}(id=${bankAccount.id}, page=${bankAccountPage.number + 1})}">
                     <button class="btn btn-danger">Désactiver</button>
                 </a>
             </div>
@@ -129,7 +129,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <a th:href="@{/activateBankAccount/{id}(id=${bankAccount.id})}">
+                <a th:href="@{/activateBankAccount/{id}(id=${bankAccount.id}, page=${bankAccountPage.number + 1})}">
                     <button class="btn btn-info">Réactiver</button>
                 </a>
             </div>
@@ -146,7 +146,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post"
-                  th:action="@{/createBankAccount}" th:object="${bankAccount}">
+                  th:action="@{/createBankAccount(page=${bankAccountPage.number+1})}"
+                  th:object="${bankAccount}">
                 <div class="modal-body">
                     <div class="form-group m-3">
                         <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
@@ -190,9 +191,6 @@
                         myModal.show();
 
 
-
-
-
                     </script>
                 </div>
             </form>
@@ -211,7 +209,7 @@
             </div>
             <div class="modal-body">
                 <form method="post"
-                      th:action="@{/updateBankAccount/{id}(id=${bankAccount.id})}"
+                      th:action="@{/updateBankAccount/{id}(id=${bankAccount.id}, page=${bankAccountPage.number+1})}"
                       th:object="${__${'bankAccount' + bankAccount.id}__}">
                     <ul th:if="${#fields.hasErrors('global')}">
                         <li th:each="err : ${#fields.errors('global')}" th:text="${err}"></li>

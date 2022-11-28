@@ -44,10 +44,11 @@ public class ContactController {
     }
 
     @PostMapping("/contact")
-    public String createContact(@Valid EmailAddress emailAddress, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+    public String createContact(@Valid EmailAddress emailAddress, BindingResult result, Model model, RedirectAttributes redirectAttributes, @RequestParam(name="page", required=false) Optional<Integer> page) {
         if (result.hasErrors()) {
             logger.info("Cannot create contact : invalid form");
-            Iterable<ContactDto> contacts = service.getPaginatedContacts(0);
+            int pageNumber = page.orElse(1) - 1;
+            Iterable<ContactDto> contacts = service.getPaginatedContacts(Math.max(0, pageNumber));
             model.addAttribute("contacts", contacts);
             return "contact";
         }
@@ -55,22 +56,24 @@ public class ContactController {
             service.saveContact(emailAddress.getAddress());
             logger.info("New contact saved");
             redirectAttributes.addFlashAttribute("message", ADD_CONTACT_SUCCESS_MESSAGE);
-            return "redirect:/contact";
+            return page.map(integer -> "redirect:/contact?page=" + integer).orElse("redirect:/contact");
         } catch (UserNotFoundException | PayerRecipientAlreadyExistsException | ContactCannotBeCurrentUserException e) {
             logger.info("Cannot create contact :" + e.getMessage());
             ObjectError error = new ObjectError("globalError", e.getMessage());
             result.addError(error);
-            Iterable<ContactDto> contacts = service.getPaginatedContacts(0);
+            int pageNumber = page.orElse(1) - 1;
+            Iterable<ContactDto> contacts = service.getPaginatedContacts(Math.max(0, pageNumber));
             model.addAttribute("contacts", contacts);
             return "contact";
         }
     }
 
     @GetMapping("/deleteContact/{recipientId}")
-    public ModelAndView deleteContact(@PathVariable("recipientId") final Long recipientId, RedirectAttributes redirectAttributes) {
+    public String deleteContact(@PathVariable("recipientId") final Long recipientId, RedirectAttributes redirectAttributes, @RequestParam(name="page",
+            required=false) Optional<Integer> page) {
         service.deleteContact(recipientId);
         logger.info("Contact deleted");
         redirectAttributes.addFlashAttribute("message", DELETE_CONTACT_SUCCESS_MESSAGE);
-        return new ModelAndView("redirect:/contact");
+        return page.map(integer -> "redirect:/contact?page=" + integer).orElse("redirect:/contact");
     }
 }

@@ -54,18 +54,4 @@ public class UserUtilsTest {
         assertEquals("phone", user.getPhone());
         assertEquals("address", user.getAddress());
     }
-
-
-    @Test
-    void convertToUserPasswordTest() {
-        // Arrange
-        ProfileDto profileDto = new ProfileDto();
-        profileDto.getPasswordDto().setPassword("password");
-
-        // Act
-        User user = UserUtils.convertToUser(profileDto);
-
-        // Assert
-        assertEquals("password", user.getPassword());
-    }
 }

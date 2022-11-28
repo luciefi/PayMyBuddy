@@ -40,7 +40,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${externalTransactions.empty}">
+                <tr th:if="${externalTransactions.totalElements == 0}">
                     <td colspan="12">Aucun virement externe</td>
                 </tr>
                 <tr th:each="externalTransaction: ${externalTransactions}">
@@ -85,7 +85,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post"
-                  th:action="@{/newExternalTransaction}" th:object="${__${'externalTransaction'+'Dto'}__}">
+                  th:action="@{/newExternalTransaction(page=${externalTransactions.number+1})}" th:object="${__${'externalTransaction'+'Dto'}__}">
                 <div class="modal-body" th:unless="${bankAccounts.empty}">
                     <div class="form-group m-3">
                         <div class="alert alert-danger alert-dismissible fade show my-2" role="alert" th:each="err : ${#fields.errors('global')}">
