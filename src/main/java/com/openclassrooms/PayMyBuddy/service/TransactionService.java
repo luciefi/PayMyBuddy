@@ -1,8 +1,9 @@
 package com.openclassrooms.PayMyBuddy.service;
 
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
-import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
-import com.openclassrooms.PayMyBuddy.model.*;
+import com.openclassrooms.PayMyBuddy.model.Transaction;
+import com.openclassrooms.PayMyBuddy.model.TransactionDto;
+import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.TransactionRepository;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
@@ -13,9 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TransactionService implements ITransactionService {

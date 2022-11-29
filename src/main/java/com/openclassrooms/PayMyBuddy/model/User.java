@@ -1,20 +1,18 @@
 package com.openclassrooms.PayMyBuddy.model;
 
 import lombok.Data;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.sql.Timestamp;
-import java.util.List;
 
 @Data
 @Entity
 @Table(name = "user")
 public class User {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "L''email ne peut pas être vide.")
@@ -30,7 +28,7 @@ public class User {
     @Column(name = "last_online_time")
     private Timestamp lastOnlineTime;
 
-    private double balance ;
+    private double balance;
 
     @Column(name = "first_name")
     @NotBlank(message = "Le prénom ne peut pas être vide.")

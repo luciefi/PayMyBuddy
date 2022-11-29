@@ -26,7 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-@ExtendWith({SpringExtension.class,MockitoExtension.class})
+
+@ExtendWith({SpringExtension.class, MockitoExtension.class})
 @ContextConfiguration
 @WithMockCustomUser
 class BankAccountServiceTest {
@@ -70,7 +71,7 @@ class BankAccountServiceTest {
     void deleteBankAccountTest() {
         // ARRANGE
         BankAccount bankAccount = new BankAccount();
-        when(bankAccountRepository.findByIdAndUserId(anyLong(),anyLong())).thenReturn(Optional.of(bankAccount));
+        when(bankAccountRepository.findByIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.of(bankAccount));
         // ACT - ASSERT
         bankAccountService.deleteBankAccount(BANK_ACCOUNT_ID_2);
         verify(bankAccountRepository, times(1)).save(any(BankAccount.class));

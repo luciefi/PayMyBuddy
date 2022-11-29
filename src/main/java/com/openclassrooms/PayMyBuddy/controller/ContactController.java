@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -34,9 +33,9 @@ public class ContactController {
     public static final String ADD_CONTACT_SUCCESS_MESSAGE = "\u2714 \u2007 Le contact a été ajouté !";
 
     @GetMapping("/contact")
-    public String contacts(Model model, @RequestParam(name="page", required=false) Optional<Integer> page) {
+    public String contacts(Model model, @RequestParam(name = "page", required = false) Optional<Integer> page) {
         int pageNumber = page.orElse(1);
-        Iterable<ContactDto> contacts = service.getPaginatedContacts(Math.max(0,pageNumber - 1));
+        Iterable<ContactDto> contacts = service.getPaginatedContacts(Math.max(0, pageNumber - 1));
         model.addAttribute("contacts", contacts);
         EmailAddress emailAddress = new EmailAddress();
         model.addAttribute("emailAddress", emailAddress);
@@ -44,7 +43,7 @@ public class ContactController {
     }
 
     @PostMapping("/contact")
-    public String createContact(@Valid EmailAddress emailAddress, BindingResult result, Model model, RedirectAttributes redirectAttributes, @RequestParam(name="page", required=false) Optional<Integer> page) {
+    public String createContact(@Valid EmailAddress emailAddress, BindingResult result, Model model, RedirectAttributes redirectAttributes, @RequestParam(name = "page", required = false) Optional<Integer> page) {
         if (result.hasErrors()) {
             logger.info("Cannot create contact : invalid form");
             int pageNumber = page.orElse(1) - 1;
@@ -69,8 +68,8 @@ public class ContactController {
     }
 
     @GetMapping("/deleteContact/{recipientId}")
-    public String deleteContact(@PathVariable("recipientId") final Long recipientId, RedirectAttributes redirectAttributes, @RequestParam(name="page",
-            required=false) Optional<Integer> page) {
+    public String deleteContact(@PathVariable("recipientId") final Long recipientId, RedirectAttributes redirectAttributes, @RequestParam(name = "page",
+            required = false) Optional<Integer> page) {
         service.deleteContact(recipientId);
         logger.info("Contact deleted");
         redirectAttributes.addFlashAttribute("message", DELETE_CONTACT_SUCCESS_MESSAGE);

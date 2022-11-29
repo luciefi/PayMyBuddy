@@ -2,7 +2,9 @@ package com.openclassrooms.PayMyBuddy.service;
 
 import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
-import com.openclassrooms.PayMyBuddy.model.*;
+import com.openclassrooms.PayMyBuddy.model.BankAccount;
+import com.openclassrooms.PayMyBuddy.model.ExternalTransaction;
+import com.openclassrooms.PayMyBuddy.model.ExternalTransactionDto;
 import com.openclassrooms.PayMyBuddy.repository.BankAccountRepository;
 import com.openclassrooms.PayMyBuddy.repository.ExternalTransactionRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
@@ -15,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ExternalTransactionService implements IExternalTransactionService {
@@ -53,7 +53,6 @@ public class ExternalTransactionService implements IExternalTransactionService {
 
     @Override
     public Page<ExternalTransaction> getAll(int pageNumber) {
-        int startItem = pageNumber * EXTERNAL_TRANSACTION_PAGE_SIZE;
         Pageable pageable = PageRequest.of(pageNumber, EXTERNAL_TRANSACTION_PAGE_SIZE);
         return externalTransactionRepository.findByUserId(CurrentUserUtils.getCurrentUserId(), pageable);
     }
@@ -61,8 +60,6 @@ public class ExternalTransactionService implements IExternalTransactionService {
     @Override
     public Page<ExternalTransactionDto> getAllDto(int pageNumber) {
         Page<ExternalTransaction> externalTransactionList = getAll(pageNumber);
-        Page<ExternalTransactionDto> externalTransactionDtos =
-                externalTransactionList.map(ExternalTransactionUtils::convertToExternalTransactionDto);
-        return externalTransactionDtos;
+        return externalTransactionList.map(ExternalTransactionUtils::convertToExternalTransactionDto);
     }
 }

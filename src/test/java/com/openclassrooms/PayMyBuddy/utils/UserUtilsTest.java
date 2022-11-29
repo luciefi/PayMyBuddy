@@ -1,6 +1,5 @@
 package com.openclassrooms.PayMyBuddy.utils;
 
-import com.openclassrooms.PayMyBuddy.model.ProfileDto;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.model.UserDto;
 import org.junit.jupiter.api.Test;

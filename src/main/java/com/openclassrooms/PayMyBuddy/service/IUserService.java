@@ -3,8 +3,6 @@ package com.openclassrooms.PayMyBuddy.service;
 import com.openclassrooms.PayMyBuddy.exception.InsufficientBalanceException;
 import com.openclassrooms.PayMyBuddy.model.*;
 
-import java.util.Optional;
-
 public interface IUserService {
     User getUser(Long id);
 

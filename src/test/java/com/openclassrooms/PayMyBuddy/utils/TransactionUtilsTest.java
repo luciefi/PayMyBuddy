@@ -1,7 +1,9 @@
 package com.openclassrooms.PayMyBuddy.utils;
 
 import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
-import com.openclassrooms.PayMyBuddy.model.*;
+import com.openclassrooms.PayMyBuddy.model.Transaction;
+import com.openclassrooms.PayMyBuddy.model.TransactionDto;
+import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.service.TransactionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

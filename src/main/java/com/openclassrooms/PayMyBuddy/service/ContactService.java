@@ -1,7 +1,12 @@
 package com.openclassrooms.PayMyBuddy.service;
 
-import com.openclassrooms.PayMyBuddy.exception.*;
-import com.openclassrooms.PayMyBuddy.model.*;
+import com.openclassrooms.PayMyBuddy.exception.ContactCannotBeCurrentUserException;
+import com.openclassrooms.PayMyBuddy.exception.PayerRecipientAlreadyExistsException;
+import com.openclassrooms.PayMyBuddy.exception.PayerRecipientNotFoundException;
+import com.openclassrooms.PayMyBuddy.model.ContactDto;
+import com.openclassrooms.PayMyBuddy.model.PayerRecipient;
+import com.openclassrooms.PayMyBuddy.model.PayerRecipientId;
+import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.PayerRecipientRepository;
 import com.openclassrooms.PayMyBuddy.utils.ContactUtils;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
@@ -30,7 +35,6 @@ public class ContactService implements IContactService {
     @Override
     public Page<ContactDto> getPaginatedContacts(int pageNumber) {
         Long currentUserId = CurrentUserUtils.getCurrentUserId();
-        int startItem = pageNumber * CONTACT_PAGE_SIZE;
         Pageable pageable = PageRequest.of(pageNumber, CONTACT_PAGE_SIZE);
         Page<PayerRecipient> contacts = payerRecipientRepository.findByPayerIdAndDeleted(currentUserId, false, pageable);
         return contacts.map(payerRecipient -> {
@@ -43,11 +47,10 @@ public class ContactService implements IContactService {
     public List<ContactDto> getContacts() {
         Long currentUserId = CurrentUserUtils.getCurrentUserId();
         List<PayerRecipient> contacts = payerRecipientRepository.findByPayerIdAndDeleted(currentUserId, false);
-        List<ContactDto> contactDtoList = contacts.stream().map(payerRecipient -> {
+        return contacts.stream().map(payerRecipient -> {
             User user = userService.getUser(payerRecipient.getRecipient().getId());
             return ContactUtils.convertToContactDto(user, payerRecipient);
         }).collect(Collectors.toList());
-        return contactDtoList;
     }
 
     @Override

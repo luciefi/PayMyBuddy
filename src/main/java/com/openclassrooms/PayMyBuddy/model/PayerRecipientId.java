@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PayerRecipientId  implements Serializable {
+public class PayerRecipientId implements Serializable {
     private Long payerId;
     private Long recipientId;
 }

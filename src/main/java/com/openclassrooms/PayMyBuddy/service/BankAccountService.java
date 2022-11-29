@@ -4,6 +4,7 @@ import com.openclassrooms.PayMyBuddy.exception.BankAccountAlreadyExistsException
 import com.openclassrooms.PayMyBuddy.exception.BankAccountNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
 import com.openclassrooms.PayMyBuddy.model.User;
+import com.openclassrooms.PayMyBuddy.repository.BankAccountRepository;
 import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.openclassrooms.PayMyBuddy.repository.BankAccountRepository;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -34,10 +33,8 @@ public class BankAccountService implements IBankAccountService {
 
     @Override
     public Page<BankAccount> getPaginatedForCurrentUser(int pageNumber) {
-        int startItem = pageNumber * BANK_ACCOUNT_PAGE_SIZE;
         Pageable pageable = PageRequest.of(pageNumber, BANK_ACCOUNT_PAGE_SIZE);
-        Page<BankAccount> bankAccounts = bankAccountRepository.findByUserId(CurrentUserUtils.getCurrentUserId(), pageable);
-        return bankAccounts;
+        return bankAccountRepository.findByUserId(CurrentUserUtils.getCurrentUserId(), pageable);
     }
 
     @Override
@@ -67,7 +64,7 @@ public class BankAccountService implements IBankAccountService {
 
     @Override
     public void activateBankAccount(Long id) {
-        BankAccount bankAccount = bankAccountRepository.findByIdAndUserId(id,CurrentUserUtils.getCurrentUserId()).orElseThrow(BankAccountNotFoundException::new);
+        BankAccount bankAccount = bankAccountRepository.findByIdAndUserId(id, CurrentUserUtils.getCurrentUserId()).orElseThrow(BankAccountNotFoundException::new);
         bankAccount.setDeactivated(false);
         bankAccountRepository.save(bankAccount);
     }

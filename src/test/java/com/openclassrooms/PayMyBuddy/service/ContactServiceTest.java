@@ -4,20 +4,20 @@ import com.openclassrooms.PayMyBuddy.configuration.WithMockCustomUser;
 import com.openclassrooms.PayMyBuddy.exception.ContactCannotBeCurrentUserException;
 import com.openclassrooms.PayMyBuddy.exception.PayerRecipientAlreadyExistsException;
 import com.openclassrooms.PayMyBuddy.exception.PayerRecipientNotFoundException;
-import com.openclassrooms.PayMyBuddy.exception.UserNotFoundException;
 import com.openclassrooms.PayMyBuddy.model.ContactDto;
 import com.openclassrooms.PayMyBuddy.model.PayerRecipient;
 import com.openclassrooms.PayMyBuddy.model.PayerRecipientId;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.repository.PayerRecipientRepository;
-import com.openclassrooms.PayMyBuddy.repository.UserRepository;
-import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -26,13 +26,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({SpringExtension.class,MockitoExtension.class})
+@ExtendWith({SpringExtension.class, MockitoExtension.class})
 @ContextConfiguration
 @WithMockCustomUser
 class ContactServiceTest {
@@ -67,15 +66,34 @@ class ContactServiceTest {
         List<ContactDto> contacts = (List<ContactDto>) contactService.getContacts();
 
         // Assert
-        assertThat(contacts).isInstanceOf(List.class);
+        assertThat(contacts).isNotNull();
         assertThat(contacts.size()).isEqualTo(1);
         assertThat(contacts.get(0).getEmail()).isEqualTo(RECIPIENT_EMAIL);
         verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndDeleted(anyLong(), anyBoolean());
         verify(userService, Mockito.times(1)).getUser(anyLong());
     }
 
-    // TODO test pagination
+    @Test
+    void getPaginatedContacts() {
+        // Arrange
+        PayerRecipient payerRecipient = new PayerRecipient();
+        User recipient = new User();
+        recipient.setId(RECIPIENT_ID);
+        recipient.setEmail(RECIPIENT_EMAIL);
+        payerRecipient.setRecipient(recipient);
+        when(payerRecipientRepository.findByPayerIdAndDeleted(anyLong(), anyBoolean(), any(Pageable.class))).thenReturn(new PageImpl<>(Collections.singletonList(payerRecipient)));
+        when(userService.getUser(anyLong())).thenReturn(recipient);
 
+        // Act
+        Page<ContactDto> contacts = contactService.getPaginatedContacts(0);
+
+        // Assert
+        assertThat(contacts).isNotNull();
+        assertThat(contacts.getNumberOfElements()).isEqualTo(1);
+        assertThat(contacts.getContent().get(0).getEmail()).isEqualTo(RECIPIENT_EMAIL);
+        verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndDeleted(anyLong(), anyBoolean(), any(Pageable.class));
+        verify(userService, Mockito.times(1)).getUser(anyLong());
+    }
     @Test
     void saveContact() {
         // Arrange
@@ -160,7 +178,7 @@ class ContactServiceTest {
         User payer = new User();
         payer.setEmail(PAYER_EMAIL);
         payer.setId(PAYER_ID);
-        ;
+
         when(userService.getUser(anyLong())).thenReturn(payer);
 
         // Act
@@ -219,7 +237,7 @@ class ContactServiceTest {
         when(payerRecipientRepository.findByPayerIdAndRecipientId(anyLong(), anyLong())).thenReturn(Optional.of(new PayerRecipient()));
 
         // Act
-          contactService.updateLastTransactionDate(RECIPIENT_ID);
+        contactService.updateLastTransactionDate(RECIPIENT_ID);
 
         // Assert
         verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndRecipientId(anyLong(), anyLong());
@@ -236,5 +254,6 @@ class ContactServiceTest {
 
         // Assert
         verify(payerRecipientRepository, Mockito.times(1)).findByPayerIdAndRecipientId(anyLong(), anyLong());
-        verify(payerRecipientRepository, Mockito.times(0)).save(any(PayerRecipient.class));    }
+        verify(payerRecipientRepository, Mockito.times(0)).save(any(PayerRecipient.class));
+    }
 }

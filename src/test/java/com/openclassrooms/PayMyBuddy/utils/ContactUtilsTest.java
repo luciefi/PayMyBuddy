@@ -4,9 +4,6 @@ import com.openclassrooms.PayMyBuddy.model.ContactDto;
 import com.openclassrooms.PayMyBuddy.model.PayerRecipient;
 import com.openclassrooms.PayMyBuddy.model.User;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

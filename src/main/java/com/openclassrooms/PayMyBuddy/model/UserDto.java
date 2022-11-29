@@ -1,13 +1,10 @@
 package com.openclassrooms.PayMyBuddy.model;
 
 import lombok.Data;
-import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.sql.Timestamp;
-import java.util.List;
 
 @Data
 public class UserDto {
@@ -18,7 +15,7 @@ public class UserDto {
     @Pattern(regexp = EmailAddress.EMAIL_ADDRESS_PATTERN, message = EmailAddress.EMAIL_INVALID_MESSAGE)
     private String email;
 
-    private double balance ;
+    private double balance;
 
     @Column(name = "first_name")
     @NotBlank(message = "Le prénom ne peut pas être vide.")

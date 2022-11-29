@@ -31,33 +31,27 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())
-                .authorizeRequests(auth -> {
-                    auth.antMatchers("/").permitAll();
-                    auth.antMatchers("/css/style.css").permitAll();
-                    auth.antMatchers("/images/img.png").permitAll();
-                    auth.antMatchers("/login").anonymous();
-                    auth.antMatchers(HttpMethod.POST, "/login").anonymous();
-                    auth.antMatchers("/createProfile").permitAll();
-                    auth.antMatchers(HttpMethod.POST, "/createProfile").anonymous();
-                    auth.anyRequest().authenticated();
-                })
-                .formLogin(formLogin -> {
-                    formLogin.loginPage("/login");
-                    formLogin.loginProcessingUrl("/login");
-                    formLogin.defaultSuccessUrl("/");
-                    formLogin.permitAll();
-                })
-                .logout(logout -> {
-                    logout.logoutUrl("/logout");
-                    logout.deleteCookies("JSESSIONID");
-                })
-                .rememberMe(rememberMe -> {
-                    rememberMe.key("theSecretKey");
-                    rememberMe.tokenRepository(persistentTokenRepository());
-                })
-                .build();
+        return http.csrf(csrf -> csrf.disable()).authorizeRequests(auth -> {
+            auth.antMatchers("/").permitAll();
+            auth.antMatchers("/css/style.css").permitAll();
+            auth.antMatchers("/images/img.png").permitAll();
+            auth.antMatchers("/login").anonymous();
+            auth.antMatchers(HttpMethod.POST, "/login").anonymous();
+            auth.antMatchers("/createProfile").permitAll();
+            auth.antMatchers(HttpMethod.POST, "/createProfile").anonymous();
+            auth.anyRequest().authenticated();
+        }).formLogin(formLogin -> {
+            formLogin.loginPage("/login");
+            formLogin.loginProcessingUrl("/login");
+            formLogin.defaultSuccessUrl("/");
+            formLogin.permitAll();
+        }).logout(logout -> {
+            logout.logoutUrl("/logout");
+            logout.deleteCookies("JSESSIONID");
+        }).rememberMe(rememberMe -> {
+            rememberMe.key("theSecretKey");
+            rememberMe.tokenRepository(persistentTokenRepository());
+        }).build();
     }
 
     @Bean(name = "persistentTokenRepository")

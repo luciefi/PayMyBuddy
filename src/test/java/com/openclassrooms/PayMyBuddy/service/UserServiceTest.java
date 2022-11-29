@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@ExtendWith({SpringExtension.class,MockitoExtension.class})
+@ExtendWith({SpringExtension.class, MockitoExtension.class})
 @ContextConfiguration
 @WithMockCustomUser
 class UserServiceTest {
@@ -349,7 +349,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updatePassword(){
+    void updatePassword() {
         // Arrange
         PasswordUpdateDto passwordUpdateDto = new PasswordUpdateDto();
         passwordUpdateDto.setOldPassword("password");
@@ -369,7 +369,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updatePasswordCurrentPasswordIncorrect(){
+    void updatePasswordCurrentPasswordIncorrect() {
         // Arrange
         PasswordUpdateDto passwordUpdateDto = new PasswordUpdateDto();
         passwordUpdateDto.setOldPassword("password");
@@ -389,7 +389,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updatePasswordConfirmationDifferent(){
+    void updatePasswordConfirmationDifferent() {
         // Arrange
         PasswordUpdateDto passwordUpdateDto = new PasswordUpdateDto();
         passwordUpdateDto.setOldPassword("password");
@@ -405,7 +405,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updatePasswordUserNotFound(){
+    void updatePasswordUserNotFound() {
         // Arrange
         PasswordUpdateDto passwordUpdateDto = new PasswordUpdateDto();
         passwordUpdateDto.setOldPassword("password");
@@ -422,7 +422,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getCurrentUserDto(){
+    void getCurrentUserDto() {
         // ARRANGE
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
 
@@ -435,7 +435,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getCurrentUserNotFoundDto(){
+    void getCurrentUserNotFoundDto() {
         // ARRANGE
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 

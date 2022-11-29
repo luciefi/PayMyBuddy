@@ -39,7 +39,7 @@ public class BankAccountControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void getBankAccountsTest() throws Exception { // TODO
+    public void getBankAccountsTest() throws Exception {
         List<BankAccount> bankAccounts = new ArrayList<>();
         BankAccount bankAccount = new BankAccount();
         bankAccount.setId(1L);

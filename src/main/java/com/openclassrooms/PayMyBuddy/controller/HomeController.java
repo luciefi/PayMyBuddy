@@ -2,8 +2,6 @@ package com.openclassrooms.PayMyBuddy.controller;
 
 import com.openclassrooms.PayMyBuddy.service.IUserService;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +34,7 @@ public class HomeController {
         return getAuthenticatedHome(model);
     }
 
-    protected String getAuthenticatedHome(Model model){
+    protected String getAuthenticatedHome(Model model) {
         double balance = userService.getBalance();
         model.addAttribute("balance", balance);
         return "home";

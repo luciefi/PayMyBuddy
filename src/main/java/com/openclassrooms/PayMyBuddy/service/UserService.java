@@ -2,15 +2,17 @@ package com.openclassrooms.PayMyBuddy.service;
 
 import com.openclassrooms.PayMyBuddy.exception.*;
 import com.openclassrooms.PayMyBuddy.model.*;
+import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 import com.openclassrooms.PayMyBuddy.utils.CurrentUserUtils;
 import com.openclassrooms.PayMyBuddy.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.openclassrooms.PayMyBuddy.repository.UserRepository;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
@@ -43,7 +45,6 @@ public class UserService implements IUserService {
     @Override
     public double getBalance() {
         User user = getUser(CurrentUserUtils.getCurrentUserId());
-        List<User> users = getUsers();
         return user.getBalance();
     }
 

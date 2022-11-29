@@ -1,11 +1,11 @@
 package com.openclassrooms.PayMyBuddy.utils;
 
-import com.openclassrooms.PayMyBuddy.model.ProfileDto;
 import com.openclassrooms.PayMyBuddy.model.User;
 import com.openclassrooms.PayMyBuddy.model.UserDto;
 
 public class UserUtils {
-    private UserUtils(){}
+    private UserUtils() {
+    }
 
     public static User convertToUser(UserDto userDto) {
         User user = new User();

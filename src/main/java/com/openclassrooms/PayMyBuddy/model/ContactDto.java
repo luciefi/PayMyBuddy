@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.sql.Timestamp;
 
 @Data
 public class ContactDto {

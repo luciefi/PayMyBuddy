@@ -3,7 +3,6 @@ package com.openclassrooms.PayMyBuddy.integration.controller;
 import com.openclassrooms.PayMyBuddy.exception.ContactCannotBeCurrentUserException;
 import com.openclassrooms.PayMyBuddy.exception.CurrentUserNotFoundException;
 import com.openclassrooms.PayMyBuddy.exception.PayerRecipientAlreadyExistsException;
-
 import com.openclassrooms.PayMyBuddy.service.ContactService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;

@@ -9,7 +9,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class TransactionUtils {
-    private TransactionUtils(){}
+    private TransactionUtils() {
+    }
+
     public static TransactionDto convertToTransactionDto(Transaction transaction) {
         TransactionDto transactionDto = new TransactionDto();
         if (transaction.getPayer().getId().equals(CurrentUserUtils.getCurrentUserId())) {

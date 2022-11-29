@@ -6,7 +6,9 @@ import com.openclassrooms.PayMyBuddy.model.ExternalTransactionDto;
 import com.openclassrooms.PayMyBuddy.model.TransactionType;
 
 public class ExternalTransactionUtils {
-    private ExternalTransactionUtils(){}
+    private ExternalTransactionUtils() {
+    }
+
     public static ExternalTransaction convertToExternalTransaction(ExternalTransactionDto externalTransactionDto, BankAccount bankAccount) {
         ExternalTransaction externalTransaction = new ExternalTransaction();
         externalTransaction.setAmount(externalTransactionDto.getAmount());

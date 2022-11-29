@@ -3,8 +3,6 @@ package com.openclassrooms.PayMyBuddy.service;
 import com.openclassrooms.PayMyBuddy.model.BankAccount;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface IBankAccountService {
     BankAccount getById(Long id);
 
